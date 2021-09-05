@@ -64,17 +64,25 @@
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
-      <AdditionalIncludeDirectories>..;$(IntDir)..;$(VcpkgPath);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..;$(IntDir)..;$(VcpkgPath)\x86-windows\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <WarningLevel>Level4</WarningLevel>
       <DisableSpecificWarnings>4100;%(DisableSpecificWarnings)</DisableSpecificWarnings>
     </ClCompile>
+    <Link>
+      <AdditionalLibraryDirectories>$(VcpkgPath)\x86-windows\debug\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>avcodec.lib;avformat.lib;avutil.lib;d3d9.lib;swresample.lib;swscale.lib;winmm.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
-      <AdditionalIncludeDirectories>..;$(IntDir)..;$(VcpkgPath);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..;$(IntDir)..;$(VcpkgPath)\x86-windows\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <WarningLevel>Level4</WarningLevel>
       <DisableSpecificWarnings>4100;%(DisableSpecificWarnings)</DisableSpecificWarnings>
     </ClCompile>
+    <Link>
+      <AdditionalLibraryDirectories>$(VcpkgPath)\x86-windows\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>avcodec.lib;avformat.lib;avutil.lib;d3d9.lib;swresample.lib;swscale.lib;winmm.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|Win32'" Label="Configuration">
     <ClCompile>
@@ -103,8 +111,15 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="src\capturer\picture_capturer.cc" />
+    <ClCompile Include="src\capturer\voice_capturer.cc" />
+    <ClCompile Include="src\encoder\audio_encoder.cc" />
+    <ClCompile Include="src\encoder\av_muxer.cc" />
+    <ClCompile Include="src\encoder\video_encoder.cc" />
     <ClCompile Include="src\main.cc" />
     <ClCompile Include="src\main_window.cc" />
+    <ClCompile Include="src\screen_recorder.cc" />
+    <ClCompile Include="src\util\time_helper.cc" />
   </ItemGroup>
   <ItemGroup>
     <QtMoc Include="src\main_window.h" />
@@ -114,6 +129,18 @@
   </ItemGroup>
   <ItemGroup>
     <QtRcc Include="res\screen_record.qrc" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="src\capturer\picture_capturer.h" />
+    <ClInclude Include="src\capturer\voice_capturer.h" />
+    <ClInclude Include="src\encoder\audio_encoder.h" />
+    <ClInclude Include="src\encoder\av_config.h" />
+    <ClInclude Include="src\encoder\av_encoder.h" />
+    <ClInclude Include="src\encoder\av_muxer.h" />
+    <ClInclude Include="src\encoder\video_encoder.h" />
+    <ClInclude Include="src\ffmpeg.h" />
+    <ClInclude Include="src\screen_recorder.h" />
+    <ClInclude Include="src\util\time_helper.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Condition="Exists('$(QtMsBuild)\qt.targets')">

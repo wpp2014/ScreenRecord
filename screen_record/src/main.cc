@@ -1,10 +1,14 @@
-﻿#include <QtCore/QTextCodec>
+﻿#include <windows.h>
+
+#include <QtCore/QTextCodec>
 #include <QtWidgets/QApplication>
 
 #include "screen_record/src/main_window.h"
 
 int main(int argc, char** argv) {
   QApplication app(argc, argv);
+
+  CoInitialize(NULL);
 
   // 设置编码格式为UTF-8
   QTextCodec* codec = QTextCodec::codecForName("UTF-8");
@@ -14,5 +18,8 @@ int main(int argc, char** argv) {
   window.adjustSize();
   window.show();
 
-  return app.exec();
+  int res = app.exec();
+
+  CoUninitialize();
+  return res;
 }
