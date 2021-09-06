@@ -150,9 +150,23 @@ void MainWindow::start() {
 }
 
 void MainWindow::pause() {
+  Q_ASSERT(status_ == Status::RECORDDING);
+  screen_recorder_->pauseRecord();
+
+  timer_->stop();
+  ui_.btnStart->setText(QStringLiteral("继续"));
+
+  status_ = Status::PAUSE;
 }
 
 void MainWindow::restart() {
+  Q_ASSERT(status_ == Status::PAUSE);
+  screen_recorder_->restartRecord();
+
+  timer_->start();
+  ui_.btnStart->setText(QStringLiteral("暂停"));
+
+  status_ = Status::RECORDDING;
 }
 
 void MainWindow::stop() { 

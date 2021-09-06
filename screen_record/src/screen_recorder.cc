@@ -54,6 +54,16 @@ void ScreenRecorder::cancelRecord() {
   status_ = Status::CANCELING;
 }
 
+void ScreenRecorder::pauseRecord() {
+  Q_ASSERT(status_ == Status::RECORDING);
+  status_ = Status::PAUSE;
+}
+
+void ScreenRecorder::restartRecord() {
+  Q_ASSERT(status_ == Status::PAUSE);
+  status_ = Status::RECORDING;
+}
+
 void ScreenRecorder::run() {
   qDebug() << QStringLiteral("开始录制");
 

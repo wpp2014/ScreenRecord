@@ -35,6 +35,10 @@ class ScreenRecorder : public QThread {
   void stopRecord();
   // 取消录屏
   void cancelRecord();
+  // 暂停录屏
+  void pauseRecord();
+  // 重新开始录屏
+  void restartRecord();
 
  private:
   void run() override;
