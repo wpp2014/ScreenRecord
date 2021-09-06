@@ -91,10 +91,10 @@ void ScreenRecorder::run() {
 
   double start_time = 0.0;
   double end_time = 0.0;
-  double pts = 0.0;
+
+  int64_t pts = 0;
 
   TimeHelper time_helper;
-
   while (status_ == Status::RECORDING) {
     start_time = time_helper.now();
 
@@ -108,10 +108,10 @@ void ScreenRecorder::run() {
     double sleep_time = interval - usage_time;
     if (sleep_time > 0.0) {
       std::this_thread::sleep_for(
-          std::chrono::milliseconds(static_cast<int>(sleep_time)));
-      pts += interval;
+          std::chrono::milliseconds(static_cast<int>(sleep_time * 1000.0)));
+      pts += static_cast<int>(interval * 1000.0);
     } else {
-      pts += usage_time;
+      pts += static_cast<int>(usage_time * 1000.0);
     }
 
     while (status_ == Status::PAUSE) {

@@ -181,7 +181,7 @@ bool AVMuxer::EncodeVideoFrame(
     return false;
   }
   if (encoded_frame) {
-    encoded_frame->pts = video_pts_;
+    encoded_frame->pts = time_stamp;
   }
 
   AVCodecContext* ctx = video_encoder_->GetCodecContext();

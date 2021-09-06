@@ -91,7 +91,7 @@ bool VideoEncoder::Initialize() {
   codec_context_->pix_fmt = AV_PIX_FMT_YUV420P;
   codec_context_->codec_type = AVMEDIA_TYPE_VIDEO;
   codec_context_->framerate = {video_config_.fps, 1};
-  codec_context_->time_base = {1, video_config_.fps};
+  codec_context_->time_base = {1, 1000};
   codec_context_->gop_size = 30;
   codec_context_->max_b_frames = 1;
   codec_context_->width = video_config_.width;
