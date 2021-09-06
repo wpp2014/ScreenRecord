@@ -89,15 +89,18 @@ void MainWindow::onUpdateTime() {
 }
 
 void MainWindow::onRecordCompleted() {
-  qDebug() << __func__;
+  qDebug() << QStringLiteral("录屏结束");
+  status_ = Status::STOPPED;
 }
 
 void MainWindow::onRecordFailed() {
-  qDebug() << __func__;
+  qDebug() << QStringLiteral("录屏失败");
+  status_ = Status::STOPPED;
 }
 
 void MainWindow::onRecordCanceled() {
-  qDebug() << __func__;
+  qDebug() << QStringLiteral("取消录屏");
+  status_ = Status::STOPPED;
 }
 
 void MainWindow::mousePressEvent(QMouseEvent* event) {
@@ -134,6 +137,8 @@ void MainWindow::start() {
       [this]() { emit recordFailed(); }
   );
   screen_recorder_->startRecord(local_path_.absolutePath(), 30);
+
+  record_time_ = 0;
 
   ui_.recordTimeLabel->setText("00:00:00");
   ui_.recordTimeLabel->show();
