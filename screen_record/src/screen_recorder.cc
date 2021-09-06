@@ -72,7 +72,9 @@ void ScreenRecorder::run() {
   video_config.width = picture->width();
   video_config.height = picture->height();
   video_config.fps = fps_;
-  video_config.input_pixel_format = AV_PIX_FMT_ARGB;
+  video_config.input_pixel_format = AV_PIX_FMT_RGB32;
+
+  picture.reset(nullptr);
 
   std::string filepath = GenerateOutputPath(output_dir_);
   std::unique_ptr<AVMuxer> av_muxer =
@@ -98,9 +100,10 @@ void ScreenRecorder::run() {
   while (status_ == Status::RECORDING) {
     start_time = time_helper.now();
 
-    picture = picture_capturer->CaptureScreen();
-    av_muxer->EncodeVideoFrame(picture->data(), picture->width(),
-                               picture->height(), picture->stride(), pts);
+    std::unique_ptr<PictureCapturer::Picture> frame =
+        picture_capturer->CaptureScreen();
+    av_muxer->EncodeVideoFrame(frame->data(), frame->width(),
+                               frame->height(), frame->stride(), pts);
 
     end_time = time_helper.now();
 
