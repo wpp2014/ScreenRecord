@@ -112,6 +112,8 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="src\capturer\picture_capturer.cc" />
+    <ClCompile Include="src\capturer\picture_capturer_d3d9.cc" />
+    <ClCompile Include="src\capturer\picture_capturer_gdi.cc" />
     <ClCompile Include="src\capturer\voice_capturer.cc" />
     <ClCompile Include="src\encoder\audio_encoder.cc" />
     <ClCompile Include="src\encoder\av_muxer.cc" />
@@ -132,6 +134,8 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\capturer\picture_capturer.h" />
+    <ClInclude Include="src\capturer\picture_capturer_d3d9.h" />
+    <ClInclude Include="src\capturer\picture_capturer_gdi.h" />
     <ClInclude Include="src\capturer\voice_capturer.h" />
     <ClInclude Include="src\encoder\audio_encoder.h" />
     <ClInclude Include="src\encoder\av_config.h" />

@@ -5,12 +5,8 @@
 
 #include <memory>
 
-#include <d3d9.h>
-#include <wrl/client.h>
-
 class PictureCapturer {
  public:
-  // argb
   class Picture {
    public:
     Picture();
@@ -36,26 +32,10 @@ class PictureCapturer {
     uint8_t* data_;
   };  // class Picture
 
-  PictureCapturer();
-  ~PictureCapturer();
+  PictureCapturer() { }
+  virtual ~PictureCapturer() { }
 
-  std::unique_ptr<Picture> CaptureScreen();
-
- private:
-  bool InitD3D9();
-
-  bool d3d9_initialized_;
-
-  int width_;
-  int height_;
-
-  Microsoft::WRL::ComPtr<IDirect3D9> d3d9_;
-  Microsoft::WRL::ComPtr<IDirect3DDevice9> d3d9_device_;
-  Microsoft::WRL::ComPtr<IDirect3DSurface9> render_target_;
-  Microsoft::WRL::ComPtr<IDirect3DSurface9> dest_target_;
-
-  PictureCapturer(const PictureCapturer&) = delete;
-  PictureCapturer& operator=(const PictureCapturer&) = delete;
+  virtual std::unique_ptr<Picture> CaptureScreen() = 0;
 };  // class PictureCapturer
 
 #endif  // SCREEN_RECORD_SRC_CAPTURER_PICTURE_CAPTURER_H_

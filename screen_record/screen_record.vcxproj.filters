@@ -43,9 +43,6 @@
     <ClCompile Include="src\encoder\video_encoder.cc">
       <Filter>Source Files\encoder</Filter>
     </ClCompile>
-    <ClCompile Include="src\capturer\picture_capturer.cc">
-      <Filter>Source Files\capturer</Filter>
-    </ClCompile>
     <ClCompile Include="src\capturer\voice_capturer.cc">
       <Filter>Source Files\capturer</Filter>
     </ClCompile>
@@ -54,6 +51,15 @@
     </ClCompile>
     <ClCompile Include="src\util\time_helper.cc">
       <Filter>Source Files\util</Filter>
+    </ClCompile>
+    <ClCompile Include="src\capturer\picture_capturer_d3d9.cc">
+      <Filter>Source Files\capturer</Filter>
+    </ClCompile>
+    <ClCompile Include="src\capturer\picture_capturer_gdi.cc">
+      <Filter>Source Files\capturer</Filter>
+    </ClCompile>
+    <ClCompile Include="src\capturer\picture_capturer.cc">
+      <Filter>Source Files\capturer</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -87,9 +93,6 @@
     <ClInclude Include="src\encoder\video_encoder.h">
       <Filter>Source Files\encoder</Filter>
     </ClInclude>
-    <ClInclude Include="src\capturer\picture_capturer.h">
-      <Filter>Source Files\capturer</Filter>
-    </ClInclude>
     <ClInclude Include="src\capturer\voice_capturer.h">
       <Filter>Source Files\capturer</Filter>
     </ClInclude>
@@ -101,6 +104,15 @@
     </ClInclude>
     <ClInclude Include="src\util\time_helper.h">
       <Filter>Source Files\util</Filter>
+    </ClInclude>
+    <ClInclude Include="src\capturer\picture_capturer_d3d9.h">
+      <Filter>Source Files\capturer</Filter>
+    </ClInclude>
+    <ClInclude Include="src\capturer\picture_capturer_gdi.h">
+      <Filter>Source Files\capturer</Filter>
+    </ClInclude>
+    <ClInclude Include="src\capturer\picture_capturer.h">
+      <Filter>Source Files\capturer</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

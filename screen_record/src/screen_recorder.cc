@@ -3,7 +3,8 @@
 #include <QtCore/QDateTime>
 #include <QtCore/QDebug>
 
-#include "screen_record/src/capturer/picture_capturer.h"
+#include "screen_record/src/capturer/picture_capturer_d3d9.h"
+#include "screen_record/src/capturer/picture_capturer_gdi.h"
 #include "screen_record/src/encoder/av_config.h"
 #include "screen_record/src/encoder/av_muxer.h"
 #include "screen_record/src/util/time_helper.h"
@@ -68,7 +69,7 @@ void ScreenRecorder::run() {
   qDebug() << QStringLiteral("开始录制");
 
   // 先抓取一张图片，获取宽和高
-  std::unique_ptr<PictureCapturer> picture_capturer(new PictureCapturer());
+  std::unique_ptr<PictureCapturer> picture_capturer(new PictureCapturerD3D9());
   std::unique_ptr<PictureCapturer::Picture> picture =
       picture_capturer->CaptureScreen();
   if (!picture) {
