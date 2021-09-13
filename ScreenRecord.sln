@@ -5,19 +5,38 @@ VisualStudioVersion = 16.0.31624.102
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "screen_record", "screen_record\screen_record.vcxproj", "{DA498E0B-8E0A-4825-A34F-8378E661775D}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "demo", "demo", "{428D2116-31F4-4B99-9954-821B14276077}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "capture_gdi", "demo\capture_gdi\capture_gdi.vcxproj", "{A5B830D4-40B3-44C2-8206-D84CDCC135BA}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|x64 = Debug|x64
 		Debug|x86 = Debug|x86
+		Release|x64 = Release|x64
 		Release|x86 = Release|x86
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{DA498E0B-8E0A-4825-A34F-8378E661775D}.Debug|x64.ActiveCfg = Debug|Win32
 		{DA498E0B-8E0A-4825-A34F-8378E661775D}.Debug|x86.ActiveCfg = Debug|Win32
 		{DA498E0B-8E0A-4825-A34F-8378E661775D}.Debug|x86.Build.0 = Debug|Win32
+		{DA498E0B-8E0A-4825-A34F-8378E661775D}.Release|x64.ActiveCfg = Release|Win32
 		{DA498E0B-8E0A-4825-A34F-8378E661775D}.Release|x86.ActiveCfg = Release|Win32
 		{DA498E0B-8E0A-4825-A34F-8378E661775D}.Release|x86.Build.0 = Release|Win32
+		{A5B830D4-40B3-44C2-8206-D84CDCC135BA}.Debug|x64.ActiveCfg = Debug|x64
+		{A5B830D4-40B3-44C2-8206-D84CDCC135BA}.Debug|x64.Build.0 = Debug|x64
+		{A5B830D4-40B3-44C2-8206-D84CDCC135BA}.Debug|x86.ActiveCfg = Debug|Win32
+		{A5B830D4-40B3-44C2-8206-D84CDCC135BA}.Debug|x86.Build.0 = Debug|Win32
+		{A5B830D4-40B3-44C2-8206-D84CDCC135BA}.Release|x64.ActiveCfg = Release|x64
+		{A5B830D4-40B3-44C2-8206-D84CDCC135BA}.Release|x64.Build.0 = Release|x64
+		{A5B830D4-40B3-44C2-8206-D84CDCC135BA}.Release|x86.ActiveCfg = Release|Win32
+		{A5B830D4-40B3-44C2-8206-D84CDCC135BA}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{A5B830D4-40B3-44C2-8206-D84CDCC135BA} = {428D2116-31F4-4B99-9954-821B14276077}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {58F3FA65-B58E-4BD9-9993-99A5C621D80D}
