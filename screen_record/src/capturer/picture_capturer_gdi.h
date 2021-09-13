@@ -13,6 +13,7 @@ class PictureCapturerGdi : public PictureCapturer {
   std::unique_ptr<PictureCapturer::Picture> CaptureScreen() override;
 
  private:
+  HWND hwnd_;
   HDC src_dc_;
   HDC memory_dc_;
 

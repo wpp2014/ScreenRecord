@@ -15,18 +15,25 @@ RECT GetVirtualScreenRect() {
 }  // namespace
 
 PictureCapturerGdi::PictureCapturerGdi()
-    : src_dc_(NULL),
+    : hwnd_(NULL),
+      src_dc_(NULL),
       memory_dc_(NULL),
       bitmap_info_({}),
       bitmap_frame_(NULL),
       old_selected_bitmap_(NULL),
       bitmap_data_(nullptr) {
-  src_dc_ = GetDC(NULL);
+  hwnd_ = GetDesktopWindow();
+  src_dc_ = GetDC(hwnd_);
   memory_dc_ = CreateCompatibleDC(src_dc_);
 
-  virtual_screen_rect_ = GetVirtualScreenRect();
-  width_ = virtual_screen_rect_.right - virtual_screen_rect_.left;
-  height_ = virtual_screen_rect_.bottom - virtual_screen_rect_.top;
+  // virtual_screen_rect_ = GetVirtualScreenRect();
+  // width_ = virtual_screen_rect_.right - virtual_screen_rect_.left;
+  // height_ = virtual_screen_rect_.bottom - virtual_screen_rect_.top;
+
+  RECT rect;
+  GetWindowRect(hwnd_, &rect);
+  width_ = rect.right - rect.left;
+  height_ = rect.bottom - rect.top;
 
   bitmap_info_.bmiHeader.biSize = sizeof(BITMAPINFOHEADER);
   bitmap_info_.bmiHeader.biWidth = width_;
@@ -45,7 +52,7 @@ PictureCapturerGdi::PictureCapturerGdi()
 
 PictureCapturerGdi::~PictureCapturerGdi() {
   DeleteDC(memory_dc_);
-  ReleaseDC(NULL, src_dc_);
+  ReleaseDC(hwnd_, src_dc_);
 }
 
 std::unique_ptr<PictureCapturer::Picture> PictureCapturerGdi::CaptureScreen() {
