@@ -1,4 +1,4 @@
-#ifndef SCREEN_RECORD_SRC_CAPTURER_PICTURE_CAPTURER_D3D9_H_
+﻿#ifndef SCREEN_RECORD_SRC_CAPTURER_PICTURE_CAPTURER_D3D9_H_
 #define SCREEN_RECORD_SRC_CAPTURER_PICTURE_CAPTURER_D3D9_H_
 
 #include <d3d9.h>
@@ -11,7 +11,7 @@ class PictureCapturerD3D9 : public PictureCapturer {
   PictureCapturerD3D9();
   ~PictureCapturerD3D9();
 
-  std::unique_ptr<PictureCapturer::Picture> CaptureScreen() override;
+  AVData* CaptureScreen() override;
 
  private:
   bool InitD3D9();

@@ -1,5 +1,7 @@
 ﻿#include "screen_record/src/screen_recorder.h"
 
+#include <cmath>
+
 #include <QtCore/QDateTime>
 #include <QtCore/QDebug>
 
@@ -30,19 +32,36 @@ ScreenRecorder::ScreenRecorder(
     const std::function<void()>& on_recording_canceled,
     const std::function<void()>& on_recording_failed)
     : status_(Status::STOPPED),
+      fps_(0),
       on_recording_completed_(on_recording_completed),
       on_recording_canceled_(on_recording_canceled),
       on_recording_failed_(on_recording_failed) {
 }
 
-ScreenRecorder::~ScreenRecorder() {}
+ScreenRecorder::~ScreenRecorder() {
+  if (capture_picture_thread_.joinable()) {
+    capture_picture_thread_.join();
+  }
+  if (isRunning()) {
+    wait(30000);
+  }
+}
 
 void ScreenRecorder::startRecord(const QString& dir, int fps) {
   fps_ = fps;
+  Q_ASSERT(fps_ > 0);
+
   output_dir_ = dir.toStdString();
 
   // 将状态设置为正在录屏
   status_ = Status::RECORDING;
+
+  data_queue_.Clear();
+
+  // 开启截屏线程
+  Q_ASSERT(!capture_picture_thread_.joinable());
+  capture_picture_thread_ =
+      std::thread(&ScreenRecorder::capturePictureThread, this, fps_);
 
   start();
 }
@@ -70,9 +89,8 @@ void ScreenRecorder::run() {
 
   // 先抓取一张图片，获取宽和高
   std::unique_ptr<PictureCapturer> picture_capturer(new PictureCapturerD3D9());
-  std::unique_ptr<PictureCapturer::Picture> picture =
-      picture_capturer->CaptureScreen();
-  if (!picture) {
+  AVData* av_data = picture_capturer->CaptureScreen();
+  if (!av_data) {
     on_recording_failed_();
     return;
   }
@@ -80,12 +98,13 @@ void ScreenRecorder::run() {
   AudioConfig audio_config;
 
   VideoConfig video_config;
-  video_config.width = picture->width();
-  video_config.height = picture->height();
+  video_config.width = av_data->width;
+  video_config.height = av_data->height;
   video_config.fps = fps_;
   video_config.input_pixel_format = AV_PIX_FMT_RGB32;
 
-  picture.reset(nullptr);
+  picture_capturer.reset(nullptr);
+  delete av_data;
 
   std::string filepath = GenerateOutputPath(output_dir_);
   std::unique_ptr<AVMuxer> av_muxer =
@@ -99,38 +118,28 @@ void ScreenRecorder::run() {
     return;
   }
 
-  // 截取屏幕的时间间隔
-  double interval = 1.0 / fps_;
+  auto abort_func = [this]() {
+    return status_ == Status::CANCELING ||
+           status_ == Status::STOPPING ||
+           status_ == Status::STOPPED;
+  };
 
-  double start_time = 0.0;
-  double end_time = 0.0;
-
-  int64_t pts = 0;
-
-  TimeHelper time_helper;
-  while (status_ == Status::RECORDING) {
-    start_time = time_helper.now();
-
-    std::unique_ptr<PictureCapturer::Picture> frame =
-        picture_capturer->CaptureScreen();
-    av_muxer->EncodeVideoFrame(frame->data(), frame->width(),
-                               frame->height(), frame->stride(), pts);
-
-    end_time = time_helper.now();
-
-    double usage_time = end_time - start_time;
-    double sleep_time = interval - usage_time;
-    if (sleep_time > 0.0) {
-      std::this_thread::sleep_for(
-          std::chrono::milliseconds(static_cast<int>(sleep_time * 1000.0)));
-      pts += static_cast<int>(interval * 1000.0);
-    } else {
-      pts += static_cast<int>(usage_time * 1000.0);
+  while (true) {
+    av_data = nullptr;
+    if (!data_queue_.Pop(&av_data, abort_func)) {
+      break;
     }
 
-    while (status_ == Status::PAUSE) {
-      std::this_thread::sleep_for(std::chrono::microseconds(100));
-    }
+    int stride = av_data->len / av_data->height;
+    int pts = std::llround(av_data->timestamp);
+#ifdef _DEBUG
+    QString info = QString("pts: %1").arg(pts);
+    qDebug() << info;
+#endif
+    av_muxer->EncodeVideoFrame(av_data->data, av_data->width, av_data->height,
+                               stride, pts);
+
+    delete av_data;
   }
 
   av_muxer.reset();
@@ -141,4 +150,60 @@ void ScreenRecorder::run() {
     on_recording_completed_();
   }
   status_ = Status::STOPPED;
+}
+
+void ScreenRecorder::capturePictureThread(int fps) {
+  double interval = 1000.0 / fps;
+
+  std::unique_ptr<PictureCapturer> picture_capturer(new PictureCapturerD3D9());
+
+  auto abort_func = [this]() {
+    return status_ == Status::CANCELING ||
+           status_ == Status::STOPPING ||
+           status_ == Status::STOPPED;
+  };
+
+  auto start = std::chrono::high_resolution_clock::now();
+  auto end = std::chrono::high_resolution_clock::now();
+
+  double pts = 0.0;
+  while (true) {
+    start = std::chrono::high_resolution_clock::now();
+
+    if (status_ == Status::CANCELING ||
+        status_ == Status::STOPPING ||
+        status_ == Status::STOPPED) {
+      return;
+    }
+
+    AVData* av_data = picture_capturer->CaptureScreen();
+    if (!av_data) {
+      qDebug() << QStringLiteral("截图失败");
+    } else {
+      av_data->timestamp = pts;
+      if (!data_queue_.Push(av_data, abort_func)) {
+        delete av_data;
+        return;
+      }
+    }
+
+    end = std::chrono::high_resolution_clock::now();
+
+    // 计算时间差(毫秒)
+    double diff =
+        std::chrono::duration<double, std::milli>(end - start).count();
+#ifdef _DEBUG
+    QString info = QString("capture picture time: %1").arg(diff);
+    qDebug() << info;
+#endif
+
+    double sleep_time = interval - diff;
+    if (sleep_time > 0) {
+      pts += interval;
+      std::this_thread::sleep_for(
+          std::chrono::milliseconds(static_cast<int64_t>(sleep_time)));
+    } else {
+      pts += diff;
+    }
+  }
 }

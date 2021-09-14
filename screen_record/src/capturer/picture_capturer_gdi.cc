@@ -1,4 +1,4 @@
-#include "screen_record/src/capturer/picture_capturer_gdi.h"
+﻿#include "screen_record/src/capturer/picture_capturer_gdi.h"
 
 #include <QtCore/QDebug>
 
@@ -55,7 +55,7 @@ PictureCapturerGdi::~PictureCapturerGdi() {
   ReleaseDC(hwnd_, src_dc_);
 }
 
-std::unique_ptr<PictureCapturer::Picture> PictureCapturerGdi::CaptureScreen() {
+AVData* PictureCapturerGdi::CaptureScreen() {
   old_selected_bitmap_ = SelectObject(memory_dc_, bitmap_frame_);
 
   BOOL res = BitBlt(memory_dc_,
@@ -68,10 +68,17 @@ std::unique_ptr<PictureCapturer::Picture> PictureCapturerGdi::CaptureScreen() {
     return nullptr;
   }
 
-  std::unique_ptr<PictureCapturer::Picture> picture(
-      new PictureCapturer::Picture());
-  picture->Reset(bitmap_data_, width_, height_, width_ * 4);
+  const int len = width_ * height_ * 4;
+
+  AVData* av_data = new AVData();
+  av_data->type = AVData::VIDEO;
+  av_data->width = width_;
+  av_data->height = height_;
+  av_data->len = len;
+
+  av_data->data = new uint8_t[len];
+  memcpy(av_data->data, bitmap_data_, sizeof(uint8_t) * len);
 
   SelectObject(memory_dc_, old_selected_bitmap_);
-  return std::move(picture);
+  return av_data;
 } 

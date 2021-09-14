@@ -1,4 +1,4 @@
-#include "screen_record/src/capturer/picture_capturer_d3d9.h"
+ï»¿#include "screen_record/src/capturer/picture_capturer_d3d9.h"
 
 #include <memory>
 
@@ -18,7 +18,7 @@ PictureCapturerD3D9::~PictureCapturerD3D9() {
 }
 
 // https://blog.csdn.net/qianbo042311/article/details/117535125
-std::unique_ptr<PictureCapturer::Picture> PictureCapturerD3D9::CaptureScreen() {
+AVData* PictureCapturerD3D9::CaptureScreen() {
   if (!d3d9_initialized_) {
     return nullptr;
   }
@@ -36,12 +36,19 @@ std::unique_ptr<PictureCapturer::Picture> PictureCapturerD3D9::CaptureScreen() {
     nullptr;
   }
 
-  std::unique_ptr<PictureCapturer::Picture> picture(
-      new PictureCapturer::Picture());
-  picture->Reset((const uint8_t*)lr.pBits, width_, height_, lr.Pitch);
+  const int len = height_ * lr.Pitch;
+
+  AVData* av_data = new AVData();
+  av_data->type = AVData::VIDEO;
+  av_data->len = len;
+  av_data->width = width_;
+  av_data->height = height_;
+
+  av_data->data = new uint8_t[len];
+  memcpy(av_data->data, lr.pBits, sizeof(uint8_t) * len);
 
   dest_target_->UnlockRect();
-  return std::move(picture);
+  return av_data;
 }
 
 bool PictureCapturerD3D9::InitD3D9() {
@@ -65,8 +72,8 @@ bool PictureCapturerD3D9::InitD3D9() {
   d3d9_param.Windowed = TRUE;
   d3d9_param.SwapEffect = D3DSWAPEFFECT_COPY;
 
-  // D3DDEVTYPE_REF: ÈíäÖÈ¾£¬ËÙ¶È½ÏÂý£¬¼æÈÝÐÔ¸ß
-  // D3DDEVTYPE_HAL: Ö§³ÖÓ²¼þ¼ÓËÙ£¬ÐÔÄÜ¸ß£¬¼æÈÝÐÔÂÔµÍ
+  // D3DDEVTYPE_REF: è½¯æ¸²æŸ“ï¼Œé€Ÿåº¦è¾ƒæ…¢ï¼Œå…¼å®¹æ€§é«˜
+  // D3DDEVTYPE_HAL: æ”¯æŒç¡¬ä»¶åŠ é€Ÿï¼Œæ€§èƒ½é«˜ï¼Œå…¼å®¹æ€§ç•¥ä½Ž
   hr = d3d9_->CreateDevice(D3DADAPTER_DEFAULT, D3DDEVTYPE_HAL,
                            GetDesktopWindow(),
                            D3DCREATE_HARDWARE_VERTEXPROCESSING, &d3d9_param,

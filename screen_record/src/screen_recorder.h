@@ -3,8 +3,13 @@
 
 #include <atomic>
 #include <functional>
+#include <thread>
 
 #include <QtCore/QThread>
+
+#include "screen_record/src/data_queue.h"
+
+const uint32_t kMaxSize = 1024 * 1024 * 1024;
 
 class ScreenRecorder : public QThread {
  public:
@@ -43,6 +48,8 @@ class ScreenRecorder : public QThread {
  private:
   void run() override;
 
+  void capturePictureThread(int fps);
+
   // 当前状态
   std::atomic<Status> status_;
 
@@ -51,6 +58,9 @@ class ScreenRecorder : public QThread {
 
   // 保存路径
   std::string output_dir_;
+
+  DataQueue<kMaxSize> data_queue_;
+  std::thread capture_picture_thread_;
 
   std::function<void()> on_recording_completed_;
   std::function<void()> on_recording_canceled_;

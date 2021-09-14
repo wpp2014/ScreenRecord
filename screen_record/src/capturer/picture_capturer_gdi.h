@@ -1,4 +1,4 @@
-#ifndef SCREEN_RECORD_SRC_CAPTURER_PICTURE_CAPTURER_GDI_H_
+﻿#ifndef SCREEN_RECORD_SRC_CAPTURER_PICTURE_CAPTURER_GDI_H_
 #define SCREEN_RECORD_SRC_CAPTURER_PICTURE_CAPTURER_GDI_H_
 
 #include <windows.h>
@@ -10,7 +10,7 @@ class PictureCapturerGdi : public PictureCapturer {
   PictureCapturerGdi();
   ~PictureCapturerGdi() override;
 
-  std::unique_ptr<PictureCapturer::Picture> CaptureScreen() override;
+  AVData* CaptureScreen() override;
 
  private:
   HWND hwnd_;
