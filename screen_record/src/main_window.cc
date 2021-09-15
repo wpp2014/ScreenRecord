@@ -89,7 +89,6 @@ void MainWindow::onUpdateTime() {
 }
 
 void MainWindow::onRecordCompleted() {
-  qDebug() << QStringLiteral("录屏结束");
   status_ = Status::STOPPED;
 }
 

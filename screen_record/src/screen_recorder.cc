@@ -85,7 +85,7 @@ void ScreenRecorder::restartRecord() {
 }
 
 void ScreenRecorder::run() {
-  qDebug() << QStringLiteral("开始录制");
+  qDebug() << QStringLiteral("开始编码");
 
   // 先抓取一张图片，获取宽和高
   std::unique_ptr<PictureCapturer> picture_capturer(new PictureCapturerD3D9());
@@ -132,12 +132,8 @@ void ScreenRecorder::run() {
 
     int stride = av_data->len / av_data->height;
     int pts = std::llround(av_data->timestamp);
-#ifdef _DEBUG
-    QString info = QString("pts: %1").arg(pts);
-    qDebug() << info;
-#endif
-    av_muxer->EncodeVideoFrame(av_data->data, av_data->width, av_data->height,
-                               stride, pts);
+    av_muxer->EncodeVideoFrame(
+        av_data->data, av_data->width, av_data->height, stride, pts);
 
     delete av_data;
   }
@@ -150,6 +146,9 @@ void ScreenRecorder::run() {
     on_recording_completed_();
   }
   status_ = Status::STOPPED;
+
+  qDebug() << QStringLiteral("编码结束");
+
 }
 
 void ScreenRecorder::capturePictureThread(int fps) {
@@ -166,6 +165,9 @@ void ScreenRecorder::capturePictureThread(int fps) {
   auto start = std::chrono::high_resolution_clock::now();
   auto end = std::chrono::high_resolution_clock::now();
 
+  auto t1 = std::chrono::high_resolution_clock::now();
+
+  uint32_t count = 0;
   double pts = 0.0;
   while (true) {
     start = std::chrono::high_resolution_clock::now();
@@ -173,7 +175,7 @@ void ScreenRecorder::capturePictureThread(int fps) {
     if (status_ == Status::CANCELING ||
         status_ == Status::STOPPING ||
         status_ == Status::STOPPED) {
-      return;
+      break;
     }
 
     AVData* av_data = picture_capturer->CaptureScreen();
@@ -183,20 +185,17 @@ void ScreenRecorder::capturePictureThread(int fps) {
       av_data->timestamp = pts;
       if (!data_queue_.Push(av_data, abort_func)) {
         delete av_data;
-        return;
+        break;
       }
     }
+
+    ++count;
 
     end = std::chrono::high_resolution_clock::now();
 
     // 计算时间差(毫秒)
     double diff =
         std::chrono::duration<double, std::milli>(end - start).count();
-#ifdef _DEBUG
-    QString info = QString("capture picture time: %1").arg(diff);
-    qDebug() << info;
-#endif
-
     double sleep_time = interval - diff;
     if (sleep_time > 0) {
       pts += interval;
@@ -206,4 +205,12 @@ void ScreenRecorder::capturePictureThread(int fps) {
       pts += diff;
     }
   }
+
+  auto t2 = std::chrono::high_resolution_clock::now();
+  double diff = std::chrono::duration<double>(t2 - t1).count();
+
+  QString info = QString::asprintf(
+      QStringLiteral("截屏操作结束，耗时%f秒，截取%u帧").toStdString().c_str(),
+      diff, count);
+  qDebug() << info;
 }
