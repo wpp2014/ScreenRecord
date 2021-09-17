@@ -11,6 +11,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "capture_gdi", "demo\capture
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "capture_d3d9", "demo\capture_d3d9\capture_d3d9.vcxproj", "{58688B27-50EF-4984-898E-44F7852EFB0A}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "video_info", "demo\video_info\video_info.vcxproj", "{0000C7E3-29CC-45C5-8CD8-9CC9E3F03635}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -41,6 +43,14 @@ Global
 		{58688B27-50EF-4984-898E-44F7852EFB0A}.Release|x64.Build.0 = Release|x64
 		{58688B27-50EF-4984-898E-44F7852EFB0A}.Release|x86.ActiveCfg = Release|Win32
 		{58688B27-50EF-4984-898E-44F7852EFB0A}.Release|x86.Build.0 = Release|Win32
+		{0000C7E3-29CC-45C5-8CD8-9CC9E3F03635}.Debug|x64.ActiveCfg = Debug|x64
+		{0000C7E3-29CC-45C5-8CD8-9CC9E3F03635}.Debug|x64.Build.0 = Debug|x64
+		{0000C7E3-29CC-45C5-8CD8-9CC9E3F03635}.Debug|x86.ActiveCfg = Debug|Win32
+		{0000C7E3-29CC-45C5-8CD8-9CC9E3F03635}.Debug|x86.Build.0 = Debug|Win32
+		{0000C7E3-29CC-45C5-8CD8-9CC9E3F03635}.Release|x64.ActiveCfg = Release|x64
+		{0000C7E3-29CC-45C5-8CD8-9CC9E3F03635}.Release|x64.Build.0 = Release|x64
+		{0000C7E3-29CC-45C5-8CD8-9CC9E3F03635}.Release|x86.ActiveCfg = Release|Win32
+		{0000C7E3-29CC-45C5-8CD8-9CC9E3F03635}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -48,6 +58,7 @@ Global
 	GlobalSection(NestedProjects) = preSolution
 		{A5B830D4-40B3-44C2-8206-D84CDCC135BA} = {428D2116-31F4-4B99-9954-821B14276077}
 		{58688B27-50EF-4984-898E-44F7852EFB0A} = {428D2116-31F4-4B99-9954-821B14276077}
+		{0000C7E3-29CC-45C5-8CD8-9CC9E3F03635} = {428D2116-31F4-4B99-9954-821B14276077}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {58F3FA65-B58E-4BD9-9993-99A5C621D80D}
