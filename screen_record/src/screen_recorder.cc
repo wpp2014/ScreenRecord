@@ -162,15 +162,18 @@ void ScreenRecorder::capturePictureThread(int fps) {
            status_ == Status::STOPPED;
   };
 
-  auto start = std::chrono::high_resolution_clock::now();
-  auto end = std::chrono::high_resolution_clock::now();
+  const auto start_time = std::chrono::high_resolution_clock::now();
+  auto start = start_time;
+  auto end = start_time;
 
   auto t1 = std::chrono::high_resolution_clock::now();
 
   uint32_t count = 0;
-  double pts = 0.0;
+  uint64_t pts = 0;
   while (true) {
     start = std::chrono::high_resolution_clock::now();
+    pts = std::llround(
+        std::chrono::duration<double, std::milli>(start - start_time).count());
 
     if (status_ == Status::CANCELING ||
         status_ == Status::STOPPING ||

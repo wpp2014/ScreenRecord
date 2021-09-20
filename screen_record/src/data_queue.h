@@ -23,7 +23,7 @@ struct AVData {
   int width;
   int height;
 
-  double timestamp;
+  uint64_t timestamp;
 
   AVData()
       : type(UNKNOWN),
@@ -31,7 +31,7 @@ struct AVData {
         len(0),
         width(0),
         height(0),
-        timestamp(0.0) {}
+        timestamp(0) {}
 
   ~AVData() {
     if (data) {
