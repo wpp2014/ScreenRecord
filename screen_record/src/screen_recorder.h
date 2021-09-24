@@ -46,8 +46,13 @@ class ScreenRecorder : public QThread {
   void restartRecord();
 
  private:
+  // 录屏线程
   void run() override;
 
+  // 处理声音数据的回调函数
+  void handleVoiceDataCallback(const uint8_t* data, int len);
+
+  // 截屏线程
   void capturePictureThread(int fps);
 
   // 当前状态
@@ -61,6 +66,8 @@ class ScreenRecorder : public QThread {
 
   DataQueue<kMaxSize> data_queue_;
   std::thread capture_picture_thread_;
+
+  std::function<bool()> abort_func_;
 
   std::function<void()> on_recording_completed_;
   std::function<void()> on_recording_canceled_;

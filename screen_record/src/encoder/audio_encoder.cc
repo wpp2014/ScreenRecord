@@ -38,21 +38,18 @@ AudioEncoder::~AudioEncoder() {
 
 bool AudioEncoder::Initialize() {
   if (initialized_) {
-    // NOTREACHED();
     Q_ASSERT(false);
     return true;
   }
 
   codec_ = avcodec_find_encoder(config_.codec_id);
   if (!codec_) {
-    // DCHECK(false) << "Unable to find audio encoder";
     Q_ASSERT(false);
     return false;
   }
 
   codec_context_ = avcodec_alloc_context3(codec_);
   if (!codec_context_) {
-    // DCHECK(false) << "Unable to alloc audio codec context.";
     Q_ASSERT(false);
     return false;
   }
@@ -61,8 +58,7 @@ bool AudioEncoder::Initialize() {
   codec_context_->sample_rate = config_.sample_rate;
   codec_context_->sample_fmt =
       codec_->sample_fmts ? codec_->sample_fmts[0] : AV_SAMPLE_FMT_FLTP;
-  codec_context_->channel_layout = codec_->channel_layouts
-      ? codec_->channel_layouts[0] : AV_CH_LAYOUT_STEREO;
+  codec_context_->channel_layout = config_.channel_layout;
   codec_context_->channels =
       av_get_channel_layout_nb_channels(codec_context_->channel_layout);
 
@@ -86,14 +82,12 @@ bool AudioEncoder::Open(AVStream* audio_stream) {
 
   int ret = avcodec_open2(codec_context_, codec_, NULL);
   if (ret < 0) {
-    // DCHECK(false) << "Unable to open audio encoder.";
     Q_ASSERT(false);
     return false;
   }
 
   ret = avcodec_parameters_from_context(audio_stream->codecpar, codec_context_);
   if (ret < 0) {
-    // DCHECK(false) << "Failed to copy avcodec parameters.";
     Q_ASSERT(false);
     return false;
   }
@@ -104,7 +98,6 @@ bool AudioEncoder::Open(AVStream* audio_stream) {
                        codec_context_->channels,
                        codec_context_->sample_rate);
   if (!frame_) {
-    // DCHECK(false) << "Error while creating audio frame.";
     Q_ASSERT(false);
     return false;
   }
@@ -130,7 +123,6 @@ int AudioEncoder::PushEncodeFrame(uint8_t* data,
 
     int ret = av_frame_make_writable(frame_);
     if (ret < 0) {
-      // DCHECK(false) << "Error while making audio frame writalbe.";
       Q_ASSERT(false);
       return ret;
     }
@@ -186,7 +178,6 @@ SwrContext* AudioEncoder::CreateResampler(AVSampleFormat dst_sample_fmt,
       src_channel_layout, src_sample_fmt, src_sample_rate,
       0, NULL);
   if (!resampler) {
-    // DCHECK(false) << "Could not allocate resampler context.";
     Q_ASSERT(false);
     return nullptr;
   }
