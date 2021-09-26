@@ -18,6 +18,9 @@ int main(int argc, char** argv) {
   QTextCodec* codec = QTextCodec::codecForName("UTF-8");
   QTextCodec::setCodecForLocale(codec);
 
+  QFont font(QString("Microsoft YaHei"), 9);
+  app.setFont(font);
+
   MainWindow window;
   window.adjustSize();
   window.show();
