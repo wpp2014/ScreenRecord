@@ -25,6 +25,11 @@
   <property name="windowTitle">
    <string>视频录制</string>
   </property>
+  <property name="styleSheet">
+   <string notr="true">QWidget#centralwidget {
+  border: 1px solid #6a74ff;
+}</string>
+  </property>
   <widget class="QWidget" name="centralwidget">
    <property name="sizePolicy">
     <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
@@ -37,6 +42,9 @@
      <width>200</width>
      <height>16777215</height>
     </size>
+   </property>
+   <property name="styleSheet">
+    <string notr="true"/>
    </property>
    <layout class="QVBoxLayout" name="verticalLayout">
     <property name="spacing">
@@ -335,7 +343,7 @@ QPushButton:pressed {
   </widget>
  </widget>
  <resources>
-  <include location="../res/ScreenRecord.qrc"/>
+  <include location="../res/screen_record.qrc"/>
  </resources>
  <connections/>
 </ui>
