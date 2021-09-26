@@ -70,6 +70,13 @@ class AVMuxer {
   std::string output_path_;
   std::string output_dir_;
 
+  // 存放每一帧的音频数据
+  uint8_t* buffer_audio_frame_;
+  // 每一个音频帧数据大小
+  int size_per_audio_frame_;
+  // 每次录音的数据大小不一定被size_per_audio_frame_整除
+  int last_index_;
+
   AVMuxer() = delete;
   AVMuxer(const AVMuxer&) = delete;
   AVMuxer& operator=(const AVMuxer&) = delete;

@@ -33,7 +33,10 @@ AVMuxer::AVMuxer(const AudioConfig & audio_config,
       audio_stream_(nullptr),
       video_config_(video_config),
       video_stream_(nullptr),
-      output_path_(output_path) {
+      output_path_(output_path),
+      buffer_audio_frame_(nullptr),
+      size_per_audio_frame_(0),
+      last_index_(0) {
 }
 
 AVMuxer::~AVMuxer() {
@@ -54,18 +57,21 @@ AVMuxer::~AVMuxer() {
 
   format_context_ = nullptr;
   output_format_ = nullptr;
+
+  if (buffer_audio_frame_) {
+    delete[] buffer_audio_frame_;
+    buffer_audio_frame_ = nullptr;
+  }
 }
 
 bool AVMuxer::Initialize() {
   if (initialized_) {
-    // NOTREACHED();
     Q_ASSERT(false);
     return true;
   }
 
   output_format_ = av_guess_format("mp4", NULL, NULL);
   if (!output_format_) {
-    // DCHECK(false) << "Unable to guess output format.";
     Q_ASSERT(false);
     return false;
   }
@@ -73,7 +79,6 @@ bool AVMuxer::Initialize() {
   int ret = avformat_alloc_output_context2(
       &format_context_, output_format_, NULL, NULL);
   if (ret < 0) {
-    // DCHECK(false) << "Unable to create avformat output context.";
     Q_ASSERT(false);
     return false;
   }
@@ -105,14 +110,12 @@ bool AVMuxer::Open() {
     ret = avio_open(
         &format_context_->pb, output_path_.c_str(), AVIO_FLAG_WRITE);
     if (ret < 0) {
-      // DLOG(ERROR) << "Open " << output_path_ << " failed.";
       return false;
     }
   }
 
   ret = avformat_write_header(format_context_, NULL);
   if (ret < 0) {
-    // DCHECK(false) << "Error occurred when opening output file.";
     Q_ASSERT(false);
     return false;
   }
@@ -135,6 +138,87 @@ bool AVMuxer::EncodeAudioFrame(uint8_t* data, int len) {
     return WriteFrame(format_context_, codec_ctx, audio_stream_, nullptr);
   }
 
+  int index = 0;
+  int copy_len = 0;
+  int remaining_len = len;
+
+  bool res = false;
+  int ret = 0;
+  AVFrame* encoded_frame = nullptr;
+  while (remaining_len > 0) {
+    Q_ASSERT(last_index_ < size_per_audio_frame_);
+
+    copy_len = size_per_audio_frame_ - last_index_;
+    if (remaining_len < copy_len) {
+      memcpy(buffer_audio_frame_ + last_index_, data + index, remaining_len);
+      last_index_ += remaining_len;
+      return true;
+    }
+
+    memcpy(buffer_audio_frame_ + last_index_, data + index, copy_len);
+    ret = audio_encoder_->PushEncodeFrame(
+        buffer_audio_frame_, size_per_audio_frame_, 0, 0, 0, 0, &encoded_frame);
+    if (ret < 0) {
+      return false;
+    }
+
+    encoded_frame->pts = av_rescale_q(
+        audio_samples_, {1, codec_ctx->sample_rate}, codec_ctx->time_base);
+    audio_samples_ += ret;
+
+    Q_ASSERT(encoded_frame);
+    res = WriteFrame(format_context_, codec_ctx, audio_stream_, encoded_frame);
+    if (!res) {
+      return false;
+    }
+
+    index += copy_len;
+    remaining_len -= copy_len;
+    last_index_ = 0;
+  }
+
+#if 0
+  while (remaining_len > 0) {
+    if (last_index_ > 0) {
+      Q_ASSERT(last_index_ < size_per_audio_frame_);
+
+      copy_len = size_per_audio_frame_ - last_index_;
+      if (remaining_len < copy_len) {
+        copy_len = remaining_len;
+      }
+    } else {
+
+    }
+
+    if (remaining_len < size_per_audio_frame_) {
+      memset(buffer_audio_frame_, 0, size_per_audio_frame_);
+      memcpy(buffer_audio_frame_, data + index, remaining_len);
+      last_index_ = remaining_len;
+      return true;
+    }
+
+    ret = audio_encoder_->PushEncodeFrame(data + index, size_per_audio_frame_,
+                                          0, 0, 0, 0, &encoded_frame);
+    if (ret < 0) {
+      return false;
+    }
+
+    encoded_frame->pts = av_rescale_q(
+        audio_samples_, {1, codec_ctx->sample_rate}, codec_ctx->time_base);
+    audio_samples_ += ret;
+
+    Q_ASSERT(encoded_frame);
+    res = WriteFrame(format_context_, codec_ctx, audio_stream_, encoded_frame);
+    if (!res) {
+      return false;
+    }
+
+    index += size_per_audio_frame_;
+    remaining_len -= size_per_audio_frame_;
+  }
+#endif
+
+#if 0
   const int buffer_size = audio_encoder_->src_buf_size();
   int index = 0;
   int copy_len = 0;
@@ -150,7 +234,6 @@ bool AVMuxer::EncodeAudioFrame(uint8_t* data, int len) {
     ret = audio_encoder_->PushEncodeFrame(data + index, copy_len, 0, 0, 0, 0,
                                           &encoded_frame);
     if (ret < 0) {
-      // LOG(ERROR) << "Error whiling encoding audio frame.";
       return false;
     }
 
@@ -167,6 +250,7 @@ bool AVMuxer::EncodeAudioFrame(uint8_t* data, int len) {
     index += copy_len;
     remaining_len -= copy_len;
   }
+#endif
 
   return true;
 }
@@ -199,7 +283,6 @@ int AVMuxer::AudioFrameSize() const {
 
 bool AVMuxer::OpenAudio() {
   if (!can_capture_voice_) {
-    // LOG(ERROR) << "Can not capture voice.";
     return false;
   }
 
@@ -208,13 +291,11 @@ bool AVMuxer::OpenAudio() {
 
   AVCodecContext* audio_codec_ctx = audio_encoder_->GetCodecContext();
   if (!audio_codec_ctx) {
-    // LOG(ERROR) << "Audio codec context is empty.";
     return false;
   }
 
   audio_stream_ = avformat_new_stream(format_context_, audio_codec_ctx->codec);
   if (!audio_stream_) {
-    // DCHECK(false) << "Could not allocate audio stream.";
     Q_ASSERT(false);
     return false;
   }
@@ -230,6 +311,9 @@ bool AVMuxer::OpenAudio() {
     return false;
   }
 
+  size_per_audio_frame_ = audio_encoder_->src_buf_size();
+  buffer_audio_frame_ = new uint8_t[size_per_audio_frame_];
+
   return true;
 }
 
@@ -244,7 +328,6 @@ bool AVMuxer::OpenVideo() {
 
   video_stream_ = avformat_new_stream(format_context_, video_codec_ctx->codec);
   if (!video_stream_) {
-    // DCHECK(false) << "Could not allocate stream.";
     Q_ASSERT(false);
     return false;
   }
@@ -270,7 +353,6 @@ bool AVMuxer::WriteFrame(AVFormatContext* format_ctx,
 
   int ret = avcodec_send_frame(codec_ctx, encoded_frame);
   if (ret < 0) {
-    // LOG(ERROR) << "Error while sending audio frame: " << av_err2str(ret);
     return false;
   }
 
@@ -280,7 +362,6 @@ bool AVMuxer::WriteFrame(AVFormatContext* format_ctx,
     if (ret == AVERROR(EAGAIN) || ret == AVERROR_EOF) {
       break;
     } else if (ret < 0) {
-      // LOG(ERROR) << "Error while receiving audio packet.";
       return false;
     }
 
@@ -291,7 +372,6 @@ bool AVMuxer::WriteFrame(AVFormatContext* format_ctx,
     av_packet_unref(&pkt);
 
     if (ret < 0) {
-      // LOG(ERROR) << "Error whiling writting audio frame.";
       return false;
     }
   }

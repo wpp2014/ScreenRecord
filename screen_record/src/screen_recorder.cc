@@ -7,11 +7,21 @@
 
 #include "screen_record/src/capturer/picture_capturer_d3d9.h"
 #include "screen_record/src/capturer/picture_capturer_gdi.h"
+#include "screen_record/src/capturer/voice_capturer.h"
 #include "screen_record/src/encoder/av_config.h"
 #include "screen_record/src/encoder/av_muxer.h"
 #include "screen_record/src/util/time_helper.h"
 
 namespace {
+
+// 声道数
+const uint16_t kChannels = 2;
+// 采样率：每秒钟采集的样本的个数
+const uint32_t kSamplesPerSec = 44100;
+// 每个样本bit数
+const uint16_t kBitsPerSample = 16;
+// 声音格式
+const uint16_t kFormatType = WAVE_FORMAT_PCM;
 
 // 构造输出路径
 std::string GenerateOutputPath(const std::string& output_dir) {
@@ -36,6 +46,11 @@ ScreenRecorder::ScreenRecorder(
       on_recording_completed_(on_recording_completed),
       on_recording_canceled_(on_recording_canceled),
       on_recording_failed_(on_recording_failed) {
+  abort_func_ = [this]() {
+    return status_ == Status::CANCELING ||
+           status_ == Status::STOPPING ||
+           status_ == Status::STOPPED;
+  };
 }
 
 ScreenRecorder::~ScreenRecorder() {
@@ -96,6 +111,10 @@ void ScreenRecorder::run() {
   }
 
   AudioConfig audio_config;
+  audio_config.channels = kChannels;
+  audio_config.sample_rate = kSamplesPerSec;
+  audio_config.sample_fmt = AV_SAMPLE_FMT_S16;
+  audio_config.channel_layout = AV_CH_LAYOUT_STEREO;
 
   VideoConfig video_config;
   video_config.width = av_data->width;
@@ -108,7 +127,7 @@ void ScreenRecorder::run() {
 
   std::string filepath = GenerateOutputPath(output_dir_);
   std::unique_ptr<AVMuxer> av_muxer =
-      std::make_unique<AVMuxer>(audio_config, video_config, filepath, false);
+      std::make_unique<AVMuxer>(audio_config, video_config, filepath, true);
   if (!av_muxer->Initialize()) {
     on_recording_failed_();
     return;
@@ -118,25 +137,40 @@ void ScreenRecorder::run() {
     return;
   }
 
-  auto abort_func = [this]() {
-    return status_ == Status::CANCELING ||
-           status_ == Status::STOPPING ||
-           status_ == Status::STOPPED;
-  };
+  // 启动录音
+  std::unique_ptr<VoiceCapturer> voice_capturer =
+      std::make_unique<VoiceCapturer>(kChannels, kSamplesPerSec, kBitsPerSample,
+                                      kFormatType,
+                                      [this](const uint8_t* data, int len) {
+                                        handleVoiceDataCallback(data, len);
+                                      });
+  if (voice_capturer->Initialize() == 0) {
+    if (!voice_capturer->Start()) {
+      qDebug() << QStringLiteral("开始录音失败");
+    }
+  }
 
   while (true) {
     av_data = nullptr;
-    if (!data_queue_.Pop(&av_data, abort_func)) {
+    if (!data_queue_.Pop(&av_data, abort_func_)) {
       break;
     }
 
-    int stride = av_data->len / av_data->height;
-    int pts = std::llround(av_data->timestamp);
-    av_muxer->EncodeVideoFrame(
-        av_data->data, av_data->width, av_data->height, stride, pts);
+    if (av_data->type == AVData::AUDIO) {
+      av_muxer->EncodeAudioFrame(av_data->data, av_data->len);
+    } else if (av_data->type == AVData::VIDEO) {
+      int stride = av_data->len / av_data->height;
+      int pts = std::llround(av_data->timestamp);
+      av_muxer->EncodeVideoFrame(av_data->data, av_data->width, av_data->height,
+                                 stride, pts);
+    } else {
+      Q_ASSERT(false);
+    }
 
     delete av_data;
   }
+
+  voice_capturer->Stop();
 
   av_muxer.reset();
 
@@ -148,19 +182,26 @@ void ScreenRecorder::run() {
   status_ = Status::STOPPED;
 
   qDebug() << QStringLiteral("编码结束");
+}
 
+void ScreenRecorder::handleVoiceDataCallback(const uint8_t* data, int len) {
+  Q_ASSERT(data && len > 0);
+
+  AVData* av_data = new AVData();
+  av_data->type = AVData::AUDIO;
+  av_data->len = len;
+  av_data->data = new uint8_t[len];
+  memcpy(av_data->data, data, len);
+
+  if (!data_queue_.Push(av_data, abort_func_)) {
+    delete av_data;
+  }
 }
 
 void ScreenRecorder::capturePictureThread(int fps) {
   double interval = 1000.0 / fps;
 
   std::unique_ptr<PictureCapturer> picture_capturer(new PictureCapturerD3D9());
-
-  auto abort_func = [this]() {
-    return status_ == Status::CANCELING ||
-           status_ == Status::STOPPING ||
-           status_ == Status::STOPPED;
-  };
 
   const auto start_time = std::chrono::high_resolution_clock::now();
   auto start = start_time;
@@ -175,9 +216,7 @@ void ScreenRecorder::capturePictureThread(int fps) {
     pts = std::llround(
         std::chrono::duration<double, std::milli>(start - start_time).count());
 
-    if (status_ == Status::CANCELING ||
-        status_ == Status::STOPPING ||
-        status_ == Status::STOPPED) {
+    if (abort_func_()) {
       break;
     }
 
@@ -186,7 +225,7 @@ void ScreenRecorder::capturePictureThread(int fps) {
       qDebug() << QStringLiteral("截图失败");
     } else {
       av_data->timestamp = pts;
-      if (!data_queue_.Push(av_data, abort_func)) {
+      if (!data_queue_.Push(av_data, abort_func_)) {
         delete av_data;
         break;
       }
@@ -215,5 +254,5 @@ void ScreenRecorder::capturePictureThread(int fps) {
   QString info = QString::asprintf(
       QStringLiteral("截屏操作结束，耗时%f秒，截取%u帧").toStdString().c_str(),
       diff, count);
-  qDebug() << info;
+  qDebug() << info.toStdString().c_str();
 }
