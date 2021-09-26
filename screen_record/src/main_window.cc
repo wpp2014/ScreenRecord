@@ -243,7 +243,7 @@ void MainWindow::connectSignals() {
           this, &MainWindow::onRecordCompleted);
   connect(this, &MainWindow::recordCanceled,
           this, &MainWindow::onRecordCanceled);
-  connect(this, &MainWindow::onRecordFailed, this, &MainWindow::onRecordFailed);
+  connect(this, &MainWindow::recordFailed, this, &MainWindow::onRecordFailed);
 
   // 定时器
   timer_.reset(new QTimer(this));
