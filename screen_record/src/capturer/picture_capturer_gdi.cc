@@ -1,6 +1,6 @@
 ﻿#include "screen_record/src/capturer/picture_capturer_gdi.h"
 
-#include <QtCore/QDebug>
+#include "glog/logging.h"
 
 namespace {
 
@@ -46,7 +46,7 @@ PictureCapturerGdi::PictureCapturerGdi()
       CreateDIBSection(src_dc_, &bitmap_info_, DIB_RGB_COLORS,
                        reinterpret_cast<void**>(&bitmap_data_), NULL, 0);
   if (!bitmap_frame_) {
-    Q_ASSERT(false);
+    DCHECK(false);
   }
 }
 

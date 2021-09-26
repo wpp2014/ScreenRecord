@@ -16,8 +16,8 @@ class VoiceCapturer {
   // bits_per_sample: 每个样本字节数
   // format_type: 声音格式
   // handle_voice_callback: 处理声音数据的回调函数，在另外的线程里被触发
-   explicit VoiceCapturer(
-      int channels,
+  explicit VoiceCapturer(
+      uint16_t channels,
       uint32_t samples_per_second,
       uint16_t bits_per_sample,
       uint16_t format_type,
@@ -47,7 +47,7 @@ class VoiceCapturer {
   // 如果为true，析构时需要关闭设备
   bool device_is_opened_;
 
-  int channels_;
+  uint16_t channels_;
   uint32_t samples_per_second_;
   uint16_t bits_per_sample_;
   uint16_t format_type_;

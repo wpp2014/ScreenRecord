@@ -2,12 +2,12 @@
 
 #include <memory>
 
-#include <QtCore/QDebug>
+#include "glog/logging.h"
 
 PictureCapturerD3D9::PictureCapturerD3D9()
     : d3d9_initialized_(false), width_(0), height_(0) {
   InitD3D9();
-  Q_ASSERT(d3d9_initialized_);
+  DCHECK(d3d9_initialized_);
 }
 
 PictureCapturerD3D9::~PictureCapturerD3D9() {
@@ -27,7 +27,7 @@ AVData* PictureCapturerD3D9::CaptureScreen() {
   ZeroMemory(&lr, sizeof(lr));
   HRESULT hr = d3d9_device_->GetFrontBufferData(0, dest_target_.Get());
   if (FAILED(hr)) {
-    qDebug() << "GetFrontBufferData failed";
+    LOG(ERROR) << "GetFrontBufferData failed";
     return nullptr;
   }
 

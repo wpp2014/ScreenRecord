@@ -1,13 +1,13 @@
 ﻿#include "screen_record/src/encoder/video_encoder.h"
 
-#include <QtCore/QDebug>
+#include "glog/logging.h"
 
 namespace {
 
 AVFrame* CreateVideoFrame(AVPixelFormat pix_fmt, int width, int height) {
   AVFrame *video_frame = av_frame_alloc();
   if (!video_frame) {
-    Q_ASSERT(false);
+    DCHECK(false);
     return nullptr;
   }
 
@@ -25,7 +25,7 @@ AVFrame* CreateVideoFrame(AVPixelFormat pix_fmt, int width, int height) {
 }
 
 void FreeBuffer(uint8_t* buffer) {
-  Q_ASSERT(buffer);
+  DCHECK(buffer);
   delete[] buffer;
 }
 
@@ -70,20 +70,18 @@ VideoEncoder::~VideoEncoder() {
 }
 
 bool VideoEncoder::Initialize() {
-  Q_ASSERT(!initialized_);
+  DCHECK(!initialized_);
 
   const AVCodecID codec_id = AV_CODEC_ID_H264;
   codec_ = avcodec_find_encoder(codec_id);
   if (!codec_) {
-    // DCHECK(false) << "Unable to find video encoder: AV_CODEC_ID_MPEG4";
-    Q_ASSERT(false);
+    DCHECK(false) << "Unable to find video encoder: AV_CODEC_ID_MPEG4";
     return false;
   }
 
   codec_context_ = avcodec_alloc_context3(codec_);
   if (!codec_context_) {
-    // DCHECK(false) << "Unable to alloc video codec context.";
-    Q_ASSERT(false);
+    DCHECK(false) << "Unable to alloc video codec context.";
     return false;
   }
 
@@ -137,20 +135,18 @@ bool VideoEncoder::Initialize() {
 }
 
 bool VideoEncoder::Open(AVStream* video_stream) {
-  Q_ASSERT(initialized_);
-  Q_ASSERT(video_stream);
+  DCHECK(initialized_);
+  DCHECK(video_stream);
 
   int ret = avcodec_open2(codec_context_, codec_, &dict_);
   if (ret < 0) {
-    // DCHECK(false) << "Unable to open video encoder.";
-    Q_ASSERT(false);
+    DCHECK(false) << "Unable to open video encoder.";
     return false;
   }
 
   ret = avcodec_parameters_from_context(video_stream->codecpar, codec_context_);
   if (ret < 0) {
-    // DCHECK(false) << "Failed to copy avcodec parameters.";
-    Q_ASSERT(false);
+    DCHECK(false) << "Failed to copy avcodec parameters.";
     return false;
   }
 
@@ -164,15 +160,14 @@ int VideoEncoder::PushEncodeFrame(uint8_t* data,
                                   int stride,
                                   int64_t time_stamp,
                                   AVFrame** encoded_frame) {
-  Q_ASSERT(encoded_frame);
+  DCHECK(encoded_frame);
 
   int ret = 0;
   *encoded_frame = nullptr;
   if (data) {
     ret = av_frame_make_writable(frame_);
     if (ret < 0) {
-      // DCHECK(false) << "Unable to make temp video frame writable";
-      Q_ASSERT(false);
+      DCHECK(false) << "Unable to make temp video frame writable";
       return -1;
     }
 
@@ -191,12 +186,10 @@ int VideoEncoder::PushEncodeFrame(uint8_t* data,
     ret = sws_scale(sws_context_, src, src_stride, 0, src_height, frame_->data,
                     frame_->linesize);
     if (ret < 0) {
-      // DCHECK(false) << "Error while converting video picture.";
-      Q_ASSERT(false);
+      DCHECK(false) << "Error while converting video picture.";
       return ret;
     }
 
-    // frame_->pts = time_stamp;
     *encoded_frame = frame_;
   }
 
@@ -208,7 +201,7 @@ AVCodecContext* VideoEncoder::GetCodecContext() const {
 }
 
 AVRational VideoEncoder::GetTimeBase() const {
-  Q_ASSERT(codec_context_);
+  DCHECK(codec_context_);
   return codec_context_->time_base;
 }
 
@@ -220,8 +213,7 @@ SwsContext* VideoEncoder::CreateSoftwareScaler(
                      dst_width, dst_height, dst_pixel_format,
                      SWS_BICUBIC, nullptr, nullptr, nullptr);
   if (!software_scaler_context) {
-    // Q_ASSERT(false) << "Could not initialize the conversion context.";
-    Q_ASSERT(false);
+    DCHECK(false) << "Could not initialize the conversion context.";
     return nullptr;
   }
   return software_scaler_context;

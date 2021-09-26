@@ -3,10 +3,10 @@
 #include <windows.h>
 #include <shlobj.h>
 
-#include <QtCore/QDebug>
 #include <QtGui/QMouseEvent>
 #include <QtWidgets/QMessageBox>
 
+#include "glog/logging.h"
 #include "screen_record/src/screen_recorder.h"
 
 const char kName[] = "ScreenRecord";
@@ -93,12 +93,12 @@ void MainWindow::onRecordCompleted() {
 }
 
 void MainWindow::onRecordFailed() {
-  qDebug() << QStringLiteral("录屏失败");
+  LOG(ERROR) << "录屏失败";
   status_ = Status::STOPPED;
 }
 
 void MainWindow::onRecordCanceled() {
-  qDebug() << QStringLiteral("取消录屏");
+  LOG(INFO) << "取消录屏";
   status_ = Status::STOPPED;
 }
 
@@ -125,7 +125,7 @@ void MainWindow::mouseMoveEvent(QMouseEvent* event) {
 }
 
 void MainWindow::start() {
-  Q_ASSERT(status_ == Status::STOPPED);
+  DCHECK(status_ == Status::STOPPED);
 
   ui_.btnStop->setEnabled(true);
   ui_.btnStart->setText(QStringLiteral("暂停"));
@@ -142,14 +142,14 @@ void MainWindow::start() {
   ui_.recordTimeLabel->setText("00:00:00");
   ui_.recordTimeLabel->show();
 
-  Q_ASSERT(!timer_->isActive());
+  DCHECK(!timer_->isActive());
   timer_->start(std::chrono::milliseconds(1000));
 
   status_ = Status::RECORDDING;
 }
 
 void MainWindow::pause() {
-  Q_ASSERT(status_ == Status::RECORDDING);
+  DCHECK(status_ == Status::RECORDDING);
   screen_recorder_->pauseRecord();
 
   timer_->stop();
@@ -159,7 +159,7 @@ void MainWindow::pause() {
 }
 
 void MainWindow::restart() {
-  Q_ASSERT(status_ == Status::PAUSE);
+  DCHECK(status_ == Status::PAUSE);
   screen_recorder_->restartRecord();
 
   timer_->start();
@@ -169,7 +169,7 @@ void MainWindow::restart() {
 }
 
 void MainWindow::stop() { 
-  Q_ASSERT(status_ == Status::RECORDDING || status_ == Status::PAUSE);
+  DCHECK(status_ == Status::RECORDDING || status_ == Status::PAUSE);
   screen_recorder_->stopRecord();
 
   timer_->stop();

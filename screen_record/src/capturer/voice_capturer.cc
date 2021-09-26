@@ -2,14 +2,14 @@
 
 #include <thread>
 
-#include <QtCore/QDebug>
+#include "glog/logging.h"
 
 #define IDM_STOP_CAPTURE            6001
 
 // static
 DWORD WINAPI VoiceCapturer::HandleVoiceThread(void* param) {
   VoiceCapturer* capturer = static_cast<VoiceCapturer*>(param);
-  Q_ASSERT(capturer);
+  DCHECK(capturer);
 
   bool stop_capture = false;
   MSG msg = { 0 };
@@ -43,7 +43,7 @@ void VoiceCapturer::OnReceiveVoiceData(bool stop_capture,
                                        HWAVEIN wave_handle,
                                        WAVEHDR* wave_header) {
   if (!wave_handle || !wave_header) {
-    Q_ASSERT(false);
+    DCHECK(false);
     return;
   }
 
@@ -57,12 +57,12 @@ void VoiceCapturer::OnReceiveVoiceData(bool stop_capture,
   if (!stop_capture) {
     MMRESULT result =
         waveInAddBuffer(wave_handle, wave_header, sizeof(WAVEHDR));
-    Q_ASSERT(result == MMSYSERR_NOERROR);
+    DCHECK(result == MMSYSERR_NOERROR) << "waveInAddBuffer调用失败: " << result;
   }
 }
 
 VoiceCapturer::VoiceCapturer(
-    int channels,
+    uint16_t channels,
     uint32_t samples_per_second,
     uint16_t bits_per_sample,
     uint16_t format_type,
@@ -79,7 +79,7 @@ VoiceCapturer::VoiceCapturer(
       micor_handle_(NULL),
       handle_voice_callback_(handle_voice_callback) {
   // 目前只支持WAVE_FORMAT_PCM格式
-  Q_ASSERT(format_type_ == WAVE_FORMAT_PCM);
+  DCHECK(format_type_ == WAVE_FORMAT_PCM) << "只支持WAVE_FORMAT_PCM格式";
 
   for (int i = 0; i < kWaveHeaderCount; ++i) {
     wave_buffers_[i] = nullptr;
@@ -101,7 +101,7 @@ VoiceCapturer::~VoiceCapturer() {
 
 int VoiceCapturer::Initialize() {
   if (waveInGetNumDevs() <= 0) {
-    qDebug() << QStringLiteral("此电脑没有录音设备");
+    LOG(WARNING) << "此电脑没有录音设备";
     return 1;
   }
 
@@ -109,7 +109,7 @@ int VoiceCapturer::Initialize() {
       CreateThread(NULL, 0, VoiceCapturer::HandleVoiceThread, this, 0,
                    &handle_data_thread_id_);
   if (!handle_data_thread_handle_) {
-    qDebug() << QStringLiteral("创建处理录入声音数据的线程失败");
+    LOG(ERROR) << "创建处理录入声音数据的线程失败";
     return 2;
   }
 
@@ -127,7 +127,7 @@ int VoiceCapturer::Initialize() {
   MMRESULT result = waveInOpen(&micor_handle_, WAVE_MAPPER, &input_format_,
                                handle_data_thread_id_, NULL, CALLBACK_THREAD);
   if (result != MMSYSERR_NOERROR) {
-    qDebug() << QStringLiteral("调用waveInOpen函数失败");
+    LOG(ERROR) << "调用waveInOpen函数失败";
     return 3;
   }
   device_is_opened_ = true;
@@ -142,13 +142,13 @@ int VoiceCapturer::Initialize() {
     result =
         waveInPrepareHeader(micor_handle_, &wave_headers_[i], sizeof(WAVEHDR));
     if (result != MMSYSERR_NOERROR) {
-      qDebug() << QStringLiteral("调用waveInPrepareHeader失败");
+      LOG(ERROR) << "调用waveInPrepareHeader失败";
       return 4;
     }
 
     result = waveInAddBuffer(micor_handle_, &wave_headers_[i], sizeof(WAVEHDR));
     if (result != MMSYSERR_NOERROR) {
-      qDebug() << QStringLiteral("调用waveInAddBuffer失败");
+      LOG(ERROR) << "调用waveInAddBuffer失败";
       return 5;
     }
   }
@@ -167,7 +167,7 @@ bool VoiceCapturer::Stop() {
     return true;
   }
 
-  Q_ASSERT(handle_data_thread_handle_);
+  DCHECK(handle_data_thread_handle_);
   PostThreadMessage(handle_data_thread_id_, IDM_STOP_CAPTURE, 0, 0);
 
   MMRESULT result = waveInStop(micor_handle_);
@@ -187,7 +187,8 @@ bool VoiceCapturer::Stop() {
     WAVEHDR tmp = wave_headers_[i];
     result = waveInUnprepareHeader(micor_handle_, &wave_headers_[i],
                                    sizeof(WAVEHDR));
-    Q_ASSERT(result == MMSYSERR_NOERROR);
+    DCHECK(result == MMSYSERR_NOERROR)
+        << "waveInUnprepareHeader调用失败: " << result;
   }
 
   result = waveInClose(micor_handle_);

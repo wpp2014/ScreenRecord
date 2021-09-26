@@ -1,6 +1,6 @@
 ﻿#include "screen_record/src/encoder/audio_encoder.h"
 
-#include <QtCore/QDebug>
+#include "glog/logging.h"
 
 AudioEncoder::AudioEncoder(const AudioConfig& audio_config)
     : initialized_(false),
@@ -38,19 +38,19 @@ AudioEncoder::~AudioEncoder() {
 
 bool AudioEncoder::Initialize() {
   if (initialized_) {
-    Q_ASSERT(false);
+    DCHECK(false);
     return true;
   }
 
   codec_ = avcodec_find_encoder(config_.codec_id);
   if (!codec_) {
-    Q_ASSERT(false);
+    DCHECK(false);
     return false;
   }
 
   codec_context_ = avcodec_alloc_context3(codec_);
   if (!codec_context_) {
-    Q_ASSERT(false);
+    DCHECK(false);
     return false;
   }
 
@@ -76,19 +76,19 @@ bool AudioEncoder::Initialize() {
 
 bool AudioEncoder::Open(AVStream* audio_stream) {
   if (!initialized_ || !audio_stream) {
-    Q_ASSERT(false);
+    DCHECK(false);
     return false;
   }
 
   int ret = avcodec_open2(codec_context_, codec_, NULL);
   if (ret < 0) {
-    Q_ASSERT(false);
+    DCHECK(false);
     return false;
   }
 
   ret = avcodec_parameters_from_context(audio_stream->codecpar, codec_context_);
   if (ret < 0) {
-    Q_ASSERT(false);
+    DCHECK(false);
     return false;
   }
 
@@ -98,7 +98,7 @@ bool AudioEncoder::Open(AVStream* audio_stream) {
                        codec_context_->channels,
                        codec_context_->sample_rate);
   if (!frame_) {
-    Q_ASSERT(false);
+    DCHECK(false);
     return false;
   }
 
@@ -112,18 +112,18 @@ int AudioEncoder::PushEncodeFrame(uint8_t* data,
                                   int stride,
                                   int64_t time_stamp,
                                   AVFrame** encoded_frame) {
-  Q_ASSERT(encoded_frame);
+  DCHECK(encoded_frame);
 
   const int nb_samples = len / 4;
-  Q_ASSERT(nb_samples == frame_->nb_samples);
+  DCHECK(nb_samples == frame_->nb_samples);
 
   *encoded_frame = nullptr;
   if (data && nb_samples > 0) {
-    Q_ASSERT(src_buf_size_ >= len);
+    DCHECK(src_buf_size_ >= len);
 
     int ret = av_frame_make_writable(frame_);
     if (ret < 0) {
-      Q_ASSERT(false);
+      DCHECK(false);
       return ret;
     }
 
@@ -134,7 +134,7 @@ int AudioEncoder::PushEncodeFrame(uint8_t* data,
       ret = swr_convert(resampler_, frame_->data, nb_samples,
                         (const uint8_t**)src_data_, nb_samples);
       if (ret < 0) {
-        Q_ASSERT(false);
+        DCHECK(false);
         return ret;
       }
     } else {
@@ -152,7 +152,7 @@ AVCodecContext * AudioEncoder::GetCodecContext() const {
 }
 
 int AudioEncoder::FrameSize() const {
-  Q_ASSERT(frame_);
+  DCHECK(frame_);
   return frame_->nb_samples;
 }
 
@@ -178,7 +178,7 @@ SwrContext* AudioEncoder::CreateResampler(AVSampleFormat dst_sample_fmt,
       src_channel_layout, src_sample_fmt, src_sample_rate,
       0, NULL);
   if (!resampler) {
-    Q_ASSERT(false);
+    DCHECK(false);
     return nullptr;
   }
 
@@ -194,7 +194,7 @@ SwrContext* AudioEncoder::CreateResampler(AVSampleFormat dst_sample_fmt,
 AVFrame* AudioEncoder::CreateFrame(
     AVSampleFormat sample_fmt, int channels, int sample_rate) {
   if (!initialized_) {
-    Q_ASSERT(false);
+    DCHECK(false);
     return nullptr;
   }
 

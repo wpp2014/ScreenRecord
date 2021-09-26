@@ -7,7 +7,7 @@
 #include <mutex>
 #include <queue>
 
-#include <QtCore/QDebug>
+#include "glog/logging.h"
 
 struct AVData {
   enum Type {
@@ -109,7 +109,7 @@ class DataQueue {
       queue_.pop();
     }
 
-    Q_ASSERT(total_size_ == 0);
+    DCHECK(total_size_ == 0);
   }
 
   void Notify() {

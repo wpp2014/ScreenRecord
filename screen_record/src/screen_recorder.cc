@@ -3,8 +3,8 @@
 #include <cmath>
 
 #include <QtCore/QDateTime>
-#include <QtCore/QDebug>
 
+#include "glog/logging.h"
 #include "screen_record/src/capturer/picture_capturer_d3d9.h"
 #include "screen_record/src/capturer/picture_capturer_gdi.h"
 #include "screen_record/src/capturer/voice_capturer.h"
@@ -100,7 +100,7 @@ void ScreenRecorder::restartRecord() {
 }
 
 void ScreenRecorder::run() {
-  qDebug() << QStringLiteral("开始编码");
+  LOG(INFO) << "开始录屏";
 
   // 先抓取一张图片，获取宽和高
   std::unique_ptr<PictureCapturer> picture_capturer(new PictureCapturerD3D9());
@@ -146,7 +146,7 @@ void ScreenRecorder::run() {
                                       });
   if (voice_capturer->Initialize() == 0) {
     if (!voice_capturer->Start()) {
-      qDebug() << QStringLiteral("开始录音失败");
+      LOG(ERROR) << "录音失败";
     }
   }
 
@@ -181,7 +181,7 @@ void ScreenRecorder::run() {
   }
   status_ = Status::STOPPED;
 
-  qDebug() << QStringLiteral("编码结束");
+  LOG(INFO) << "结束录屏";
 }
 
 void ScreenRecorder::handleVoiceDataCallback(const uint8_t* data, int len) {
@@ -222,7 +222,7 @@ void ScreenRecorder::capturePictureThread(int fps) {
 
     AVData* av_data = picture_capturer->CaptureScreen();
     if (!av_data) {
-      qDebug() << QStringLiteral("截图失败");
+      LOG(ERROR) << "截屏失败";
     } else {
       av_data->timestamp = pts;
       if (!data_queue_.Push(av_data, abort_func_)) {
@@ -251,8 +251,8 @@ void ScreenRecorder::capturePictureThread(int fps) {
   auto t2 = std::chrono::high_resolution_clock::now();
   double diff = std::chrono::duration<double>(t2 - t1).count();
 
-  QString info = QString::asprintf(
-      QStringLiteral("截屏操作结束，耗时%f秒，截取%u帧").toStdString().c_str(),
-      diff, count);
-  qDebug() << info.toStdString().c_str();
+  char info[1024];
+  memset(info, 0, 1024);
+  sprintf(info, "截屏操作结束，耗时%.3f秒，截取%u帧", diff, count);
+  LOG(INFO) << info;
 }

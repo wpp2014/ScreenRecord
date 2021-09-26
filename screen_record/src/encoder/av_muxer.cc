@@ -1,6 +1,6 @@
 ﻿#include "screen_record/src/encoder/av_muxer.h"
 
-#include <QtCore/QDebug>
+#include "glog/logging.h"
 
 #include "screen_record/src/encoder/audio_encoder.h"
 #include "screen_record/src/encoder/video_encoder.h"
@@ -43,7 +43,7 @@ AVMuxer::~AVMuxer() {
   Flush();
 
   int ret = av_write_trailer(format_context_);
-  Q_ASSERT(ret == 0);
+  DCHECK(ret == 0);
 
   audio_encoder_.reset(nullptr);
   video_encoder_.reset(nullptr);
@@ -66,20 +66,20 @@ AVMuxer::~AVMuxer() {
 
 bool AVMuxer::Initialize() {
   if (initialized_) {
-    Q_ASSERT(false);
+    DCHECK(false);
     return true;
   }
 
   output_format_ = av_guess_format("mp4", NULL, NULL);
   if (!output_format_) {
-    Q_ASSERT(false);
+    DCHECK(false);
     return false;
   }
 
   int ret = avformat_alloc_output_context2(
       &format_context_, output_format_, NULL, NULL);
   if (ret < 0) {
-    Q_ASSERT(false);
+    DCHECK(false);
     return false;
   }
 
@@ -116,7 +116,7 @@ bool AVMuxer::Open() {
 
   ret = avformat_write_header(format_context_, NULL);
   if (ret < 0) {
-    Q_ASSERT(false);
+    DCHECK(false);
     return false;
   }
 
@@ -146,7 +146,7 @@ bool AVMuxer::EncodeAudioFrame(uint8_t* data, int len) {
   int ret = 0;
   AVFrame* encoded_frame = nullptr;
   while (remaining_len > 0) {
-    Q_ASSERT(last_index_ < size_per_audio_frame_);
+    DCHECK(last_index_ < size_per_audio_frame_);
 
     copy_len = size_per_audio_frame_ - last_index_;
     if (remaining_len < copy_len) {
@@ -166,7 +166,7 @@ bool AVMuxer::EncodeAudioFrame(uint8_t* data, int len) {
         audio_samples_, {1, codec_ctx->sample_rate}, codec_ctx->time_base);
     audio_samples_ += ret;
 
-    Q_ASSERT(encoded_frame);
+    DCHECK(encoded_frame);
     res = WriteFrame(format_context_, codec_ctx, audio_stream_, encoded_frame);
     if (!res) {
       return false;
@@ -277,7 +277,7 @@ bool AVMuxer::EncodeVideoFrame(
 }
 
 int AVMuxer::AudioFrameSize() const {
-  Q_ASSERT(audio_encoder_ && audio_encoder_.get());
+  DCHECK(audio_encoder_ && audio_encoder_.get());
   return audio_encoder_->FrameSize();
 }
 
@@ -286,8 +286,8 @@ bool AVMuxer::OpenAudio() {
     return false;
   }
 
-  Q_ASSERT(initialized_);
-  Q_ASSERT(audio_encoder_ && audio_encoder_.get());
+  DCHECK(initialized_);
+  DCHECK(audio_encoder_ && audio_encoder_.get());
 
   AVCodecContext* audio_codec_ctx = audio_encoder_->GetCodecContext();
   if (!audio_codec_ctx) {
@@ -296,7 +296,7 @@ bool AVMuxer::OpenAudio() {
 
   audio_stream_ = avformat_new_stream(format_context_, audio_codec_ctx->codec);
   if (!audio_stream_) {
-    Q_ASSERT(false);
+    DCHECK(false);
     return false;
   }
 
@@ -318,8 +318,8 @@ bool AVMuxer::OpenAudio() {
 }
 
 bool AVMuxer::OpenVideo() {
-  Q_ASSERT(initialized_);
-  Q_ASSERT(video_encoder_ && video_encoder_.get());
+  DCHECK(initialized_);
+  DCHECK(video_encoder_ && video_encoder_.get());
 
   AVCodecContext* video_codec_ctx = video_encoder_->GetCodecContext();
   if (!video_codec_ctx) {
@@ -328,7 +328,7 @@ bool AVMuxer::OpenVideo() {
 
   video_stream_ = avformat_new_stream(format_context_, video_codec_ctx->codec);
   if (!video_stream_) {
-    Q_ASSERT(false);
+    DCHECK(false);
     return false;
   }
   video_stream_->time_base = {1, 90000};
@@ -349,7 +349,7 @@ bool AVMuxer::WriteFrame(AVFormatContext* format_ctx,
                          AVCodecContext* codec_ctx,
                          AVStream* stream,
                          AVFrame* encoded_frame) {
-  Q_ASSERT(format_ctx && codec_ctx && stream);
+  DCHECK(format_ctx && codec_ctx && stream);
 
   int ret = avcodec_send_frame(codec_ctx, encoded_frame);
   if (ret < 0) {
@@ -387,6 +387,6 @@ int AVMuxer::WriteVideoFrame(
 
   /* Write the compressed frame to the media file. */
   const int ret = av_interleaved_write_frame(format_context_, pkt);
-  Q_ASSERT(ret == 0);
+  DCHECK(ret == 0);
   return ret;
 }
