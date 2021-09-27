@@ -59,9 +59,9 @@ AVData* PictureCapturerGdi::CaptureScreen() {
   old_selected_bitmap_ = SelectObject(memory_dc_, bitmap_frame_);
 
   BOOL res = BitBlt(memory_dc_,
-                    virtual_screen_rect_.left, virtual_screen_rect_.top,
+                    0, 0,
                     width_, height_, src_dc_,
-                    virtual_screen_rect_.left, virtual_screen_rect_.top,
+                    0, 0,
                     SRCCOPY | CAPTUREBLT);
   if (!res) {
     SelectObject(memory_dc_, old_selected_bitmap_);
@@ -81,4 +81,4 @@ AVData* PictureCapturerGdi::CaptureScreen() {
 
   SelectObject(memory_dc_, old_selected_bitmap_);
   return av_data;
-} 
+}
