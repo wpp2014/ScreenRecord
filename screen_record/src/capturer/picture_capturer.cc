@@ -1,5 +1,6 @@
 ﻿#include "screen_record/src/capturer/picture_capturer.h"
 
+// https://www.coder.work/article/1221121
 void PictureCapturer::DrawMouseIcon(HDC hdc) {
   POINT point;
   if (!GetCursorPos(&point)) {
