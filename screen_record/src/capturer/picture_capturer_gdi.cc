@@ -62,7 +62,7 @@ AVData* PictureCapturerGdi::CaptureScreen() {
                     0, 0,
                     width_, height_, src_dc_,
                     0, 0,
-                    SRCCOPY | CAPTUREBLT);
+                    SRCCOPY);
   if (!res) {
     SelectObject(memory_dc_, old_selected_bitmap_);
     return nullptr;
