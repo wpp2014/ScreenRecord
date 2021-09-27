@@ -31,6 +31,13 @@ AVData* PictureCapturerD3D9::CaptureScreen() {
     return nullptr;
   }
 
+  // 绘制鼠标
+  HDC hdc = NULL;
+  if (dest_target_->GetDC(&hdc) == D3D_OK) {
+    DrawMouseIcon(hdc);
+    dest_target_->ReleaseDC(hdc);
+  }
+
   hr = dest_target_->LockRect(&lr, NULL, D3DLOCK_READONLY);
   if (FAILED(hr) || !lr.pBits) {
     nullptr;

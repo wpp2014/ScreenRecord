@@ -58,6 +58,9 @@
     <ClCompile Include="src\capturer\picture_capturer_gdi.cc">
       <Filter>Source Files\capturer</Filter>
     </ClCompile>
+    <ClCompile Include="src\capturer\picture_capturer.cc">
+      <Filter>Source Files\capturer</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <QtUic Include="ui\main_window.ui">

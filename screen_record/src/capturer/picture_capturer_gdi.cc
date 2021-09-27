@@ -68,8 +68,10 @@ AVData* PictureCapturerGdi::CaptureScreen() {
     return nullptr;
   }
 
-  const int len = width_ * height_ * 4;
+  // 绘制鼠标
+  DrawMouseIcon(memory_dc_);
 
+  const int len = width_ * height_ * 4;
   AVData* av_data = new AVData();
   av_data->type = AVData::VIDEO;
   av_data->width = width_;
