@@ -61,17 +61,13 @@ void MainWindow::onClickStartBtn() {
       break;
 
     default:
-      Q_ASSERT(false);
+      DCHECK(false);
       break;
   }
 }
 
 void MainWindow::onClickStopBtn() {
-  if (status_ == Status::RECORDDING || status_ == Status::PAUSE) {
-    stop();
-  } else {
-    Q_ASSERT(false);
-  }
+  stop();
 }
 
 void MainWindow::onClickOpenBtn() {
@@ -90,6 +86,7 @@ void MainWindow::onUpdateTime() {
 
 void MainWindow::onRecordCompleted() {
   status_ = Status::STOPPED;
+  ui_.btnStart->setEnabled(true);
 }
 
 void MainWindow::onRecordFailed() {
@@ -176,6 +173,7 @@ void MainWindow::stop() {
   ui_.recordTimeLabel->hide();
 
   ui_.btnStart->setText(QStringLiteral("开始"));
+  ui_.btnStart->setEnabled(false);
   ui_.btnStop->setEnabled(false);
 }
 

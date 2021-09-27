@@ -137,19 +137,6 @@ void ScreenRecorder::run() {
     return;
   }
 
-  // 启动录音
-  std::unique_ptr<VoiceCapturer> voice_capturer =
-      std::make_unique<VoiceCapturer>(kChannels, kSamplesPerSec, kBitsPerSample,
-                                      kFormatType,
-                                      [this](const uint8_t* data, int len) {
-                                        handleVoiceDataCallback(data, len);
-                                      });
-  if (voice_capturer->Initialize() == 0) {
-    if (!voice_capturer->Start()) {
-      LOG(ERROR) << "录音失败";
-    }
-  }
-
   while (true) {
     av_data = nullptr;
     if (!data_queue_.Pop(&av_data, abort_func_)) {
@@ -169,8 +156,6 @@ void ScreenRecorder::run() {
 
     delete av_data;
   }
-
-  voice_capturer->Stop();
 
   av_muxer.reset();
 
@@ -199,6 +184,19 @@ void ScreenRecorder::handleVoiceDataCallback(const uint8_t* data, int len) {
 }
 
 void ScreenRecorder::capturePictureThread(int fps) {
+  // 启动录音
+  std::unique_ptr<VoiceCapturer> voice_capturer =
+      std::make_unique<VoiceCapturer>(kChannels, kSamplesPerSec, kBitsPerSample,
+                                      kFormatType,
+                                      [this](const uint8_t* data, int len) {
+                                        handleVoiceDataCallback(data, len);
+                                      });
+  if (voice_capturer->Initialize() == 0) {
+    if (!voice_capturer->Start()) {
+      LOG(ERROR) << "录音失败";
+    }
+  }
+
   double interval = 1000.0 / fps;
 
   std::unique_ptr<PictureCapturer> picture_capturer(new PictureCapturerD3D9());
@@ -250,6 +248,9 @@ void ScreenRecorder::capturePictureThread(int fps) {
 
   auto t2 = std::chrono::high_resolution_clock::now();
   double diff = std::chrono::duration<double>(t2 - t1).count();
+
+  // 结束录音
+  voice_capturer->Stop();
 
   char info[1024];
   memset(info, 0, 1024);

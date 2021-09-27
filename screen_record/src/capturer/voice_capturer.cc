@@ -201,8 +201,6 @@ bool VoiceCapturer::Stop() {
   handle_data_thread_handle_ = NULL;
   handle_data_thread_id_ = 0;
 
-  std::this_thread::sleep_for(std::chrono::seconds(1));
-
   micor_handle_ = NULL;
   initialized_ = false;
   device_is_opened_ = false;
