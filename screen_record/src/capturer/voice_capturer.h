@@ -24,28 +24,33 @@ class VoiceCapturer {
       const std::function<void(const uint8_t* data, int len)>& handle_voice_callback);
   ~VoiceCapturer();
 
-  int Initialize();
-
   // 调用waveInStart开始录音
-  bool Start();
+  void Start();
 
   // 停止录音
-  bool Stop();
+  void Stop();
+
+  // 暂停录音
+  void Pause();
 
  private:
   static DWORD WINAPI HandleVoiceThread(void* param);
 
   void OnReceiveVoiceData(bool stop_capture,
+                          bool pause_capture,
                           HWAVEIN wave_handle,
                           WAVEHDR* wave_header);
 
   static const int kWaveHeaderCount = 4;
 
-  // 需要根据初始化的结果决定是否执行录音功能
-  bool initialized_;
-
-  // 如果为true，析构时需要关闭设备
+  // 录音设备是否已打开
   bool device_is_opened_;
+
+  // 是否正在录音
+  bool is_recording_;
+
+  // 调用Start函数的线程ID，确保在同一个线程调用Start和Stop
+  DWORD start_thread_id_;
 
   uint16_t channels_;
   uint32_t samples_per_second_;

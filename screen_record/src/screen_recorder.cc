@@ -51,6 +51,12 @@ ScreenRecorder::ScreenRecorder(
            status_ == Status::STOPPING ||
            status_ == Status::STOPPED;
   };
+
+  voice_capturer_ = std::make_unique<VoiceCapturer>(
+      kChannels, kSamplesPerSec, kBitsPerSample, kFormatType,
+      [this](const uint8_t* data, int len) {
+        handleVoiceDataCallback(data, len);
+      });
 }
 
 ScreenRecorder::~ScreenRecorder() {
@@ -92,11 +98,15 @@ void ScreenRecorder::cancelRecord() {
 void ScreenRecorder::pauseRecord() {
   Q_ASSERT(status_ == Status::RECORDING);
   status_ = Status::PAUSE;
+
+  voice_capturer_->Pause();
 }
 
 void ScreenRecorder::restartRecord() {
   Q_ASSERT(status_ == Status::PAUSE);
   status_ = Status::RECORDING;
+
+  voice_capturer_->Pause();
 }
 
 void ScreenRecorder::run() {
@@ -184,23 +194,13 @@ void ScreenRecorder::handleVoiceDataCallback(const uint8_t* data, int len) {
 }
 
 void ScreenRecorder::capturePictureThread(int fps) {
-  // 启动录音
-  std::unique_ptr<VoiceCapturer> voice_capturer =
-      std::make_unique<VoiceCapturer>(kChannels, kSamplesPerSec, kBitsPerSample,
-                                      kFormatType,
-                                      [this](const uint8_t* data, int len) {
-                                        handleVoiceDataCallback(data, len);
-                                      });
-  if (voice_capturer->Initialize() == 0) {
-    if (!voice_capturer->Start()) {
-      LOG(ERROR) << "录音失败";
-    }
-  }
+  // 开始录音
+  voice_capturer_->Start();
 
+  // 截屏的频率
   double interval = 1000.0 / fps;
 
   std::unique_ptr<PictureCapturer> picture_capturer(new PictureCapturerD3D9());
-
   const auto start_time = std::chrono::high_resolution_clock::now();
   auto start = start_time;
   auto end = start_time;
@@ -209,10 +209,13 @@ void ScreenRecorder::capturePictureThread(int fps) {
 
   uint32_t count = 0;
   uint64_t pts = 0;
+  uint64_t pause_time = 0;
   while (true) {
     start = std::chrono::high_resolution_clock::now();
     pts = std::llround(
-        std::chrono::duration<double, std::milli>(start - start_time).count());
+              std::chrono::duration<double, std::milli>(start - start_time)
+                  .count()) -
+          pause_time;
 
     if (abort_func_()) {
       break;
@@ -238,19 +241,23 @@ void ScreenRecorder::capturePictureThread(int fps) {
         std::chrono::duration<double, std::milli>(end - start).count();
     double sleep_time = interval - diff;
     if (sleep_time > 0) {
-      pts += interval;
       std::this_thread::sleep_for(
           std::chrono::milliseconds(static_cast<int64_t>(sleep_time)));
-    } else {
-      pts += diff;
+    }
+
+    // 暂停
+    while (status_ == Status::PAUSE) {
+      pause_time += 100;
+      std::this_thread::sleep_for(std::chrono::milliseconds(100));
     }
   }
 
   auto t2 = std::chrono::high_resolution_clock::now();
-  double diff = std::chrono::duration<double>(t2 - t1).count();
+  double diff =
+      std::chrono::duration<double>(t2 - t1).count() - pause_time / 1000.0;
 
   // 结束录音
-  voice_capturer->Stop();
+  voice_capturer_->Stop();
 
   char info[1024];
   memset(info, 0, 1024);

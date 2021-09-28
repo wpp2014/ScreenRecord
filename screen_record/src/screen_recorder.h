@@ -11,6 +11,8 @@
 
 const uint32_t kMaxSize = 1024 * 1024 * 1024;
 
+class VoiceCapturer;
+
 class ScreenRecorder : public QThread {
  public:
   enum class Status {
@@ -66,6 +68,8 @@ class ScreenRecorder : public QThread {
 
   DataQueue<kMaxSize> data_queue_;
   std::thread capture_picture_thread_;
+
+  std::unique_ptr<VoiceCapturer> voice_capturer_;
 
   std::function<bool()> abort_func_;
 
