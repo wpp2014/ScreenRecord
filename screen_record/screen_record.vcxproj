@@ -132,6 +132,9 @@
     <ClInclude Include="src\screen_recorder.h" />
     <ClInclude Include="src\util\time_helper.h" />
   </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="res\screen_record.rc" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Condition="Exists('$(QtMsBuild)\qt.targets')">
     <Import Project="$(QtMsBuild)\qt.targets" />
