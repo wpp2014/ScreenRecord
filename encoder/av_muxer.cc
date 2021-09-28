@@ -1,9 +1,9 @@
-﻿#include "screen_record/src/encoder/av_muxer.h"
+﻿#include "encoder/av_muxer.h"
 
 #include "glog/logging.h"
 
-#include "screen_record/src/encoder/audio_encoder.h"
-#include "screen_record/src/encoder/video_encoder.h"
+#include "encoder/audio_encoder.h"
+#include "encoder/video_encoder.h"
 
 #ifdef av_err2str
 #undef av_err2str

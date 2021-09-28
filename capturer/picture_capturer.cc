@@ -1,4 +1,4 @@
-﻿#include "screen_record/src/capturer/picture_capturer.h"
+﻿#include "capturer/picture_capturer.h"
 
 // https://www.coder.work/article/1221121
 void PictureCapturer::DrawMouseIcon(HDC hdc) {

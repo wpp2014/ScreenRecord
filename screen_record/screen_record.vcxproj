@@ -71,7 +71,7 @@
     </ClCompile>
     <Link>
       <AdditionalLibraryDirectories>$(VcpkgPath)\x86-windows\debug\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>avcodec.lib;avformat.lib;avutil.lib;d3d9.lib;gflags_debug.lib;glog.lib;swresample.lib;swscale.lib;winmm.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>$(OutDir)capturer.lib;$(OutDir)encoder.lib;avcodec.lib;avformat.lib;avutil.lib;d3d9.lib;gflags_debug.lib;glog.lib;swresample.lib;swscale.lib;winmm.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -83,7 +83,7 @@
     </ClCompile>
     <Link>
       <AdditionalLibraryDirectories>$(VcpkgPath)\x86-windows\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>avcodec.lib;avformat.lib;avutil.lib;d3d9.lib;gflags.lib;glog.lib;swresample.lib;swscale.lib;winmm.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>$(OutDir)capturer.lib;$(OutDir)encoder.lib;avcodec.lib;avformat.lib;avutil.lib;d3d9.lib;gflags.lib;glog.lib;swresample.lib;swscale.lib;winmm.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|Win32'" Label="Configuration">
@@ -113,13 +113,6 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="src\capturer\picture_capturer.cc" />
-    <ClCompile Include="src\capturer\picture_capturer_d3d9.cc" />
-    <ClCompile Include="src\capturer\picture_capturer_gdi.cc" />
-    <ClCompile Include="src\capturer\voice_capturer.cc" />
-    <ClCompile Include="src\encoder\audio_encoder.cc" />
-    <ClCompile Include="src\encoder\av_muxer.cc" />
-    <ClCompile Include="src\encoder\video_encoder.cc" />
     <ClCompile Include="src\main.cc" />
     <ClCompile Include="src\main_window.cc" />
     <ClCompile Include="src\screen_recorder.cc" />
@@ -135,17 +128,7 @@
     <QtRcc Include="res\screen_record.qrc" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="src\capturer\picture_capturer.h" />
-    <ClInclude Include="src\capturer\picture_capturer_d3d9.h" />
-    <ClInclude Include="src\capturer\picture_capturer_gdi.h" />
-    <ClInclude Include="src\capturer\voice_capturer.h" />
     <ClInclude Include="src\data_queue.h" />
-    <ClInclude Include="src\encoder\audio_encoder.h" />
-    <ClInclude Include="src\encoder\av_config.h" />
-    <ClInclude Include="src\encoder\av_encoder.h" />
-    <ClInclude Include="src\encoder\av_muxer.h" />
-    <ClInclude Include="src\encoder\video_encoder.h" />
-    <ClInclude Include="src\ffmpeg.h" />
     <ClInclude Include="src\screen_recorder.h" />
     <ClInclude Include="src\util\time_helper.h" />
   </ItemGroup>

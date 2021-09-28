@@ -1,10 +1,10 @@
-﻿#ifndef SCREEN_RECORD_SRC_CAPTURER_PICTURE_CAPTURER_D3D9_H_
-#define SCREEN_RECORD_SRC_CAPTURER_PICTURE_CAPTURER_D3D9_H_
+﻿#ifndef CAPTURER_PICTURE_CAPTURER_D3D9_H_
+#define CAPTURER_PICTURE_CAPTURER_D3D9_H_
 
 #include <d3d9.h>
 #include <wrl/client.h>
 
-#include "screen_record/src/capturer/picture_capturer.h"
+#include "capturer/picture_capturer.h"
 
 class PictureCapturerD3D9 : public PictureCapturer {
  public:
@@ -30,4 +30,4 @@ class PictureCapturerD3D9 : public PictureCapturer {
   PictureCapturerD3D9& operator=(const PictureCapturerD3D9&) = delete;
 };  // class PictureCapturerD3D9
 
-#endif  // SCREEN_RECORD_SRC_CAPTURER_PICTURE_CAPTURER_D3D9_H_
+#endif  // CAPTURER_PICTURE_CAPTURER_D3D9_H_

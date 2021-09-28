@@ -1,5 +1,5 @@
-﻿#ifndef SCREEN_RECORD_SRC_FFMPEG_H_
-#define SCREEN_RECORD_SRC_FFMPEG_H_
+﻿#ifndef ENCODER_FFMPEG_H_
+#define ENCODER_FFMPEG_H_
 
 #pragma warning(push)
 #pragma warning(disable : 4244)
@@ -21,4 +21,4 @@ extern "C" {
 
 #pragma warning(pop)
 
-#endif  // SCREEN_RECORD_SRC_FFMPEG_H_
+#endif  // ENCODER_FFMPEG_H_

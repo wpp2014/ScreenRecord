@@ -1,4 +1,4 @@
-﻿#include "screen_record/src/encoder/audio_encoder.h"
+﻿#include "encoder/audio_encoder.h"
 
 #include "glog/logging.h"
 

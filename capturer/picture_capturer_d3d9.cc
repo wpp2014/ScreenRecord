@@ -1,4 +1,4 @@
-﻿#include "screen_record/src/capturer/picture_capturer_d3d9.h"
+﻿#include "capturer/picture_capturer_d3d9.h"
 
 #include <memory>
 

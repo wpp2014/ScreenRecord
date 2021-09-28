@@ -1,7 +1,7 @@
 ﻿#ifndef SCREEN_RECORD_LIB_ENCODER_AV_ENCODER_H_
 #define SCREEN_RECORD_LIB_ENCODER_AV_ENCODER_H_
 
-#include "screen_record/src/ffmpeg.h"
+#include "encoder/ffmpeg.h"
 
 class AVEncoder {
  public:

@@ -1,0 +1,16 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="audio_encoder.cc" />
+    <ClCompile Include="av_muxer.cc" />
+    <ClCompile Include="video_encoder.cc" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="audio_encoder.h" />
+    <ClInclude Include="av_config.h" />
+    <ClInclude Include="av_encoder.h" />
+    <ClInclude Include="av_muxer.h" />
+    <ClInclude Include="video_encoder.h" />
+    <ClInclude Include="ffmpeg.h" />
+  </ItemGroup>
+</Project>

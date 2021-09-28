@@ -4,12 +4,12 @@
 
 #include <QtCore/QDateTime>
 
+#include "capturer/picture_capturer_d3d9.h"
+#include "capturer/picture_capturer_gdi.h"
+#include "capturer/voice_capturer.h"
+#include "encoder/av_config.h"
+#include "encoder/av_muxer.h"
 #include "glog/logging.h"
-#include "screen_record/src/capturer/picture_capturer_d3d9.h"
-#include "screen_record/src/capturer/picture_capturer_gdi.h"
-#include "screen_record/src/capturer/voice_capturer.h"
-#include "screen_record/src/encoder/av_config.h"
-#include "screen_record/src/encoder/av_muxer.h"
 #include "screen_record/src/util/time_helper.h"
 
 namespace {

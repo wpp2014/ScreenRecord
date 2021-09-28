@@ -1,10 +1,10 @@
 ﻿// 视频编码
 
-#ifndef SCREEN_RECORD_LIB_ENCODER_VIDEO_ENCODER_H_
-#define SCREEN_RECORD_LIB_ENCODER_VIDEO_ENCODER_H_
+#ifndef ENCODER_VIDEO_ENCODER_H_
+#define ENCODER_VIDEO_ENCODER_H_
 
-#include "screen_record/src/encoder/av_config.h"
-#include "screen_record/src/encoder/av_encoder.h"
+#include "encoder/av_config.h"
+#include "encoder/av_encoder.h"
 
 class VideoEncoder : public AVEncoder {
  public:
@@ -51,4 +51,4 @@ class VideoEncoder : public AVEncoder {
   VideoEncoder& operator=(const VideoEncoder&) = delete;
 };  // class VideoEncoder
 
-#endif  // SCREEN_RECORD_LIB_ENCODER_VIDEO_ENCODER_H_
+#endif  // ENCODER_VIDEO_ENCODER_H_

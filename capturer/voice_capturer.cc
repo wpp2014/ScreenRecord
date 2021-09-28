@@ -1,4 +1,4 @@
-﻿#include "screen_record/src/capturer/voice_capturer.h"
+﻿#include "capturer/voice_capturer.h"
 
 #include <thread>
 

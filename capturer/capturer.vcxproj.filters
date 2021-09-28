@@ -1,0 +1,16 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="picture_capturer.cc" />
+    <ClCompile Include="picture_capturer_d3d9.cc" />
+    <ClCompile Include="picture_capturer_gdi.cc" />
+    <ClCompile Include="voice_capturer.cc" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="picture_capturer.h" />
+    <ClInclude Include="picture_capturer_d3d9.h" />
+    <ClInclude Include="picture_capturer_gdi.h" />
+    <ClInclude Include="voice_capturer.h" />
+    <ClInclude Include="av_data.h" />
+  </ItemGroup>
+</Project>

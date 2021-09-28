@@ -1,9 +1,9 @@
-﻿#ifndef SCREEN_RECORD_SRC_CAPTURER_PICTURE_CAPTURER_GDI_H_
-#define SCREEN_RECORD_SRC_CAPTURER_PICTURE_CAPTURER_GDI_H_
+﻿#ifndef CAPTURER_PICTURE_CAPTURER_GDI_H_
+#define CAPTURER_PICTURE_CAPTURER_GDI_H_
 
 #include <windows.h>
 
-#include "screen_record/src/capturer/picture_capturer.h"
+#include "capturer/picture_capturer.h"
 
 class PictureCapturerGdi : public PictureCapturer {
  public:
@@ -31,4 +31,4 @@ class PictureCapturerGdi : public PictureCapturer {
   PictureCapturerGdi& operator=(const PictureCapturerGdi&) = delete;
 };  // class PictureCapturerGdi
 
-#endif  // SCREEN_RECORD_SRC_CAPTURER_PICTURE_CAPTURER_GDI_H_
+#endif  // CAPTURER_PICTURE_CAPTURER_GDI_H_

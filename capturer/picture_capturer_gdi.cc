@@ -1,4 +1,4 @@
-﻿#include "screen_record/src/capturer/picture_capturer_gdi.h"
+﻿#include "capturer/picture_capturer_gdi.h"
 
 #include "glog/logging.h"
 

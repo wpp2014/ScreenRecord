@@ -9,37 +9,7 @@
 
 #include "glog/logging.h"
 
-struct AVData {
-  enum Type {
-    UNKNOWN = 0,
-    AUDIO,
-    VIDEO,
-  };
-
-  Type type;
-
-  uint8_t* data;
-  int len;
-  int width;
-  int height;
-
-  uint64_t timestamp;
-
-  AVData()
-      : type(UNKNOWN),
-        data(nullptr),
-        len(0),
-        width(0),
-        height(0),
-        timestamp(0) {}
-
-  ~AVData() {
-    if (data) {
-      delete data;
-      data = nullptr;
-    }
-  }
-};
+struct AVData;
 
 template<uint32_t MAX_SIZE>
 class DataQueue {

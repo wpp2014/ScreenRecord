@@ -3,7 +3,7 @@
 
 #include <windows.h>
 
-#include "screen_record/src/data_queue.h"
+#include "capturer/av_data.h"
 
 class PictureCapturer {
  public:

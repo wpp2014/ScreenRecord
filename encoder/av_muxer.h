@@ -1,12 +1,12 @@
 ﻿// 音视频合成器
 
-#ifndef SCREEN_RECORD_LIB_ENCODER_AV_MUXER_H_
-#define SCREEN_RECORD_LIB_ENCODER_AV_MUXER_H_
+#ifndef ENCODER_AV_MUXER_H_
+#define ENCODER_AV_MUXER_H_
 
 #include <memory>
 #include <string>
 
-#include "screen_record/src/encoder/av_config.h"
+#include "encoder/av_config.h"
 
 class AudioEncoder;
 class VideoEncoder;
@@ -80,6 +80,6 @@ class AVMuxer {
   AVMuxer() = delete;
   AVMuxer(const AVMuxer&) = delete;
   AVMuxer& operator=(const AVMuxer&) = delete;
-};  // namespace AVMuxer
+};  // class AVMuxer
 
-#endif  // SCREEN_RECORD_LIB_ENCODER_AV_MUXER_H_
+#endif  // ENCODER_AV_MUXER_H_

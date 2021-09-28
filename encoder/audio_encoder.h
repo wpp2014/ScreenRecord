@@ -1,8 +1,8 @@
-﻿#ifndef SCREEN_RECORD_LIB_ENCODER_AUDIO_ENCODER_H_
-#define SCREEN_RECORD_LIB_ENCODER_AUDIO_ENCODER_H_
+﻿#ifndef ENCODER_AUDIO_ENCODER_H_
+#define ENCODER_AUDIO_ENCODER_H_
 
-#include "screen_record/src/encoder/av_config.h"
-#include "screen_record/src/encoder/av_encoder.h"
+#include "encoder/av_config.h"
+#include "encoder/av_encoder.h"
 
 class AudioEncoder : public AVEncoder {
  public:
@@ -57,4 +57,4 @@ class AudioEncoder : public AVEncoder {
   AudioEncoder& operator=(const AudioEncoder&) = delete;
 };  // class AudioEncoder
 
-#endif  // SCREEN_RECORD_LIB_ENCODER_AUDIO_ENCODER_H_
+#endif  // ENCODER_AUDIO_ENCODER_H_

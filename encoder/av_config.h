@@ -1,7 +1,7 @@
-﻿#ifndef SCREEN_RECORD_LIB_ENCODER_AV_CONFIG_H_
-#define SCREEN_RECORD_LIB_ENCODER_AV_CONFIG_H_
+﻿#ifndef ENCODER_AV_CONFIG_H_
+#define ENCODER_AV_CONFIG_H_
 
-#include "screen_record/src/ffmpeg.h"
+#include "encoder/ffmpeg.h"
 
 struct VideoConfig {
   // 帧率
@@ -33,4 +33,4 @@ struct AudioConfig {
         sample_fmt(AV_SAMPLE_FMT_NONE) {}
 };
 
-#endif  // SCREEN_RECORD_LIB_ENCODER_AV_CONFIG_H_
+#endif  // ENCODER_AV_CONFIG_H_

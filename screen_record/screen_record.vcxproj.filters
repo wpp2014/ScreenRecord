@@ -17,12 +17,6 @@
       <UniqueIdentifier>{639EADAA-A684-42e4-A9AD-28FC9BCB8F7C}</UniqueIdentifier>
       <Extensions>ts</Extensions>
     </Filter>
-    <Filter Include="Source Files\encoder">
-      <UniqueIdentifier>{b47ec231-93e5-4837-9067-dc927d6f926c}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source Files\capturer">
-      <UniqueIdentifier>{a47d1b9c-0155-4cd9-8445-85db8ee659d6}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Source Files\util">
       <UniqueIdentifier>{d0c4a9f0-1956-433f-9415-4fd8a3b525d7}</UniqueIdentifier>
     </Filter>
@@ -34,32 +28,11 @@
     <ClCompile Include="src\main_window.cc">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\encoder\audio_encoder.cc">
-      <Filter>Source Files\encoder</Filter>
-    </ClCompile>
-    <ClCompile Include="src\encoder\av_muxer.cc">
-      <Filter>Source Files\encoder</Filter>
-    </ClCompile>
-    <ClCompile Include="src\encoder\video_encoder.cc">
-      <Filter>Source Files\encoder</Filter>
-    </ClCompile>
-    <ClCompile Include="src\capturer\voice_capturer.cc">
-      <Filter>Source Files\capturer</Filter>
-    </ClCompile>
     <ClCompile Include="src\screen_recorder.cc">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\util\time_helper.cc">
       <Filter>Source Files\util</Filter>
-    </ClCompile>
-    <ClCompile Include="src\capturer\picture_capturer_d3d9.cc">
-      <Filter>Source Files\capturer</Filter>
-    </ClCompile>
-    <ClCompile Include="src\capturer\picture_capturer_gdi.cc">
-      <Filter>Source Files\capturer</Filter>
-    </ClCompile>
-    <ClCompile Include="src\capturer\picture_capturer.cc">
-      <Filter>Source Files\capturer</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -78,41 +51,11 @@
     </QtRcc>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="src\encoder\audio_encoder.h">
-      <Filter>Source Files\encoder</Filter>
-    </ClInclude>
-    <ClInclude Include="src\encoder\av_config.h">
-      <Filter>Source Files\encoder</Filter>
-    </ClInclude>
-    <ClInclude Include="src\encoder\av_encoder.h">
-      <Filter>Source Files\encoder</Filter>
-    </ClInclude>
-    <ClInclude Include="src\encoder\av_muxer.h">
-      <Filter>Source Files\encoder</Filter>
-    </ClInclude>
-    <ClInclude Include="src\encoder\video_encoder.h">
-      <Filter>Source Files\encoder</Filter>
-    </ClInclude>
-    <ClInclude Include="src\capturer\voice_capturer.h">
-      <Filter>Source Files\capturer</Filter>
-    </ClInclude>
-    <ClInclude Include="src\ffmpeg.h">
-      <Filter>Source Files</Filter>
-    </ClInclude>
     <ClInclude Include="src\screen_recorder.h">
       <Filter>Source Files</Filter>
     </ClInclude>
     <ClInclude Include="src\util\time_helper.h">
       <Filter>Source Files\util</Filter>
-    </ClInclude>
-    <ClInclude Include="src\capturer\picture_capturer_d3d9.h">
-      <Filter>Source Files\capturer</Filter>
-    </ClInclude>
-    <ClInclude Include="src\capturer\picture_capturer_gdi.h">
-      <Filter>Source Files\capturer</Filter>
-    </ClInclude>
-    <ClInclude Include="src\capturer\picture_capturer.h">
-      <Filter>Source Files\capturer</Filter>
     </ClInclude>
     <ClInclude Include="src\data_queue.h">
       <Filter>Source Files</Filter>

@@ -1,5 +1,5 @@
-﻿#ifndef SCREEN_RECORD_LIB_VOICE_CAPTURER_H_
-#define SCREEN_RECORD_LIB_VOICE_CAPTURER_H_
+﻿#ifndef CAPTURER_VOICE_CAPTURER_H_
+#define CAPTURER_VOICE_CAPTURER_H_
 
 #include <stdint.h>
 
@@ -73,4 +73,4 @@ class VoiceCapturer {
   VoiceCapturer& operator=(const VoiceCapturer&) = delete;
 };  // class VoiceCapturer
 
-#endif  // SCREEN_RECORD_LIB_VOICE_CAPTURER_H_
+#endif  // CAPTURER_VOICE_CAPTURER_H_
