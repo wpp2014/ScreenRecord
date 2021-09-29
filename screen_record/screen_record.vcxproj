@@ -64,7 +64,7 @@
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
-      <AdditionalIncludeDirectories>..;$(IntDir)..;$(VcpkgPath)\x86-windows-static\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>.;..;$(IntDir)..;$(VcpkgPath)\x86-windows-static\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <WarningLevel>Level4</WarningLevel>
       <DisableSpecificWarnings>4100;%(DisableSpecificWarnings)</DisableSpecificWarnings>
       <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;GLOG_NO_ABBREVIATED_SEVERITIES;GOOGLE_GLOG_DLL_DECL=;%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -76,7 +76,7 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
-      <AdditionalIncludeDirectories>..;$(IntDir)..;$(VcpkgPath)\x86-windows-static\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>.;..;$(IntDir)..;$(VcpkgPath)\x86-windows-static\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <WarningLevel>Level4</WarningLevel>
       <DisableSpecificWarnings>4100;%(DisableSpecificWarnings)</DisableSpecificWarnings>
       <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;GLOG_NO_ABBREVIATED_SEVERITIES;GOOGLE_GLOG_DLL_DECL=;%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -116,6 +116,7 @@
     <ClCompile Include="src\main.cc" />
     <ClCompile Include="src\main_window.cc" />
     <ClCompile Include="src\screen_recorder.cc" />
+    <ClCompile Include="src\util\string.cc" />
     <ClCompile Include="src\util\time_helper.cc" />
   </ItemGroup>
   <ItemGroup>
@@ -128,8 +129,10 @@
     <QtRcc Include="res\screen_record.qrc" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="res\version.h" />
     <ClInclude Include="src\data_queue.h" />
     <ClInclude Include="src\screen_recorder.h" />
+    <ClInclude Include="src\util\string.h" />
     <ClInclude Include="src\util\time_helper.h" />
   </ItemGroup>
   <ItemGroup>

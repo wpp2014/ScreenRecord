@@ -7,7 +7,9 @@
 #include <QtWidgets/QMessageBox>
 
 #include "glog/logging.h"
+#include "res/version.h"
 #include "screen_record/src/screen_recorder.h"
+#include "screen_record/src/util/string.h"
 
 const char kName[] = "ScreenRecord";
 
@@ -17,6 +19,12 @@ MainWindow::MainWindow(QWidget* parent)
       status_(Status::STOPPED),
       record_time_(0) {
   ui_.setupUi(this);
+
+  // 设置title
+  std::wstring name = SysMultiByteToWide(PRODUCT_NAME, CP_ACP);
+  std::wstring version = SysMultiByteToWide(VERSION_STR, CP_ACP);
+  QString title = QString::asprintf("%ls%ls", name.c_str(), version.c_str());
+  ui_.titleLabel->setText(title);
 
   initLocalPath();
 

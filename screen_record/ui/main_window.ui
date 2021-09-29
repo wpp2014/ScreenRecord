@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>200</width>
+    <width>300</width>
     <height>250</height>
    </rect>
   </property>
@@ -23,7 +23,7 @@
    </font>
   </property>
   <property name="windowTitle">
-   <string>视频录制</string>
+   <string>录屏助手</string>
   </property>
   <property name="styleSheet">
    <string notr="true">QWidget#centralwidget {
@@ -39,7 +39,7 @@
    </property>
    <property name="maximumSize">
     <size>
-     <width>200</width>
+     <width>300</width>
      <height>16777215</height>
     </size>
    </property>
@@ -100,7 +100,7 @@ background-color: #6a74ff;</string>
         <number>0</number>
        </property>
        <property name="leftMargin">
-        <number>15</number>
+        <number>12</number>
        </property>
        <property name="topMargin">
         <number>0</number>
@@ -132,7 +132,7 @@ background-color: #6a74ff;</string>
           </font>
          </property>
          <property name="text">
-          <string>视频录制</string>
+          <string/>
          </property>
          <property name="alignment">
           <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
@@ -255,13 +255,13 @@ QPushButton:pressed {
         <widget class="QPushButton" name="btnStart">
          <property name="minimumSize">
           <size>
-           <width>180</width>
+           <width>280</width>
            <height>40</height>
           </size>
          </property>
          <property name="maximumSize">
           <size>
-           <width>180</width>
+           <width>16777215</width>
            <height>40</height>
           </size>
          </property>
@@ -274,13 +274,13 @@ QPushButton:pressed {
         <widget class="QPushButton" name="btnStop">
          <property name="minimumSize">
           <size>
-           <width>180</width>
+           <width>280</width>
            <height>40</height>
           </size>
          </property>
          <property name="maximumSize">
           <size>
-           <width>180</width>
+           <width>16777215</width>
            <height>40</height>
           </size>
          </property>
@@ -293,13 +293,13 @@ QPushButton:pressed {
         <widget class="QPushButton" name="btnOpen">
          <property name="minimumSize">
           <size>
-           <width>180</width>
+           <width>280</width>
            <height>40</height>
           </size>
          </property>
          <property name="maximumSize">
           <size>
-           <width>180</width>
+           <width>16777215</width>
            <height>40</height>
           </size>
          </property>
@@ -312,13 +312,13 @@ QPushButton:pressed {
         <widget class="QLabel" name="recordTimeLabel">
          <property name="minimumSize">
           <size>
-           <width>180</width>
+           <width>280</width>
            <height>40</height>
           </size>
          </property>
          <property name="maximumSize">
           <size>
-           <width>180</width>
+           <width>16777215</width>
            <height>40</height>
           </size>
          </property>
