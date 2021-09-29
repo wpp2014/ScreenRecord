@@ -88,10 +88,12 @@ bool AVMuxer::Initialize() {
     return false;
   }
 
-  // 有可能没有录音设备
-  audio_config_.codec_id = output_format_->audio_codec;
-  audio_encoder_.reset(new AudioEncoder(audio_config_));
-  can_capture_voice_ = audio_encoder_->Initialize();
+  if (can_capture_voice_) {
+    // 有可能没有录音设备
+    audio_config_.codec_id = output_format_->audio_codec;
+    audio_encoder_.reset(new AudioEncoder(audio_config_));
+    can_capture_voice_ = audio_encoder_->Initialize();
+  }
 
   initialized_ = true;
   return true;
