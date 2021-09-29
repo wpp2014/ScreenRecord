@@ -261,7 +261,8 @@ void ScreenRecorder::capturePictureThread(int fps) {
 
   char info[1024];
   memset(info, 0, 1024);
-  sprintf(info, "截屏操作结束，耗时%.3f秒，截取%u帧", diff, count);
+  sprintf(info, "截屏操作结束，耗时%.3f秒，截取%u帧，帧率: %.3f",
+          diff, count, count / diff);
   LOG(INFO) << info;
 
   // 队列发送通知，解决暂停录屏之后直接点击停止按钮，导致编码线程阻塞的问题
