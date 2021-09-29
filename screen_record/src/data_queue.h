@@ -7,9 +7,8 @@
 #include <mutex>
 #include <queue>
 
+#include "capturer/av_data.h"
 #include "glog/logging.h"
-
-struct AVData;
 
 template<uint32_t MAX_SIZE>
 class DataQueue {
