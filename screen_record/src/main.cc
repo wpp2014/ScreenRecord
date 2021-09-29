@@ -10,9 +10,6 @@
 const char kLogDirName[] = "log";
 
 void InitLogging() {
-  QString exe_path_qt = QCoreApplication::applicationFilePath();
-  exe_path_qt = QDir::toNativeSeparators(exe_path_qt);
-
   QDir log_dir(QCoreApplication::applicationDirPath());
   if (!log_dir.exists(kLogDirName)) {
     log_dir.mkdir(kLogDirName);
@@ -21,12 +18,11 @@ void InitLogging() {
   QString log_dir_qt = log_dir.absolutePath() + "/" + kLogDirName;
   log_dir_qt = QDir::toNativeSeparators(log_dir_qt);
 
-  std::wstring exe_path_c = exe_path_qt.toStdWString();
-  std::string exe_path = SysWideToMultiByte(exe_path_c, CP_ACP);
+  std::wstring log_dst_dir = log_dir_qt.toStdWString();
+  std::string log_dst_dir_a = SysWideToMultiByte(log_dst_dir, CP_ACP);
 
-  google::InitGoogleLogging(exe_path.c_str());
   FLAGS_alsologtostderr = true;
-  FLAGS_log_dir = SysWideToMultiByte(log_dir_qt.toStdWString(), CP_ACP);
+  FLAGS_log_dir = log_dst_dir_a;
 }
 
 int main(int argc, char** argv) {
@@ -34,6 +30,7 @@ int main(int argc, char** argv) {
 
   CoInitialize(NULL);
 
+  google::InitGoogleLogging(argv[0]);
   InitLogging();
 
   // 设置编码格式为UTF-8
