@@ -1,189 +1,255 @@
-﻿#include <stdio.h>
+﻿#include <assert.h>
+#include <stdio.h>
 
-#include <atomic>
 #include <chrono>
-#include <condition_variable>
-#include <iostream>
-#include <memory>
-#include <mutex>
-#include <queue>
+#include <string>
 #include <thread>
 
+#include <objidl.h>
+#include <gdiplus.h>
+#include <shlwapi.h>
+
 #include "capturer/picture_capturer_d3d9.h"
-#include "capturer/picture_capturer_gdi.h"
-#include "encoder/av_muxer.h"
-#include "encoder/video_encoder.h"
-#include "glog/logging.h"
 
-const int kTotalCount = 300;
-const int kMaxSize = 1024 * 1024 * 1024;
-const int kFrameCount = 2048;
-const int kFps = 30;
+using namespace Gdiplus;
 
-static PictureCapturer* g_picture_capturer = nullptr;
-static std::atomic_bool g_exit = false;
+const int kPathLen = 1024;
+const int kCount = 20;
 
-template <uint32_t MAX_SIZE>
-class DataQueue {
- public:
-  DataQueue() : total_size_(0) {}
+static HWND g_hwnd = NULL;
+static int g_width = 0;
+static int g_height = 0;
 
-  template <typename T>
-  bool Push(AVData* data, T abort_func) {
-    bool was_empty = false;
-    {
-      std::unique_lock<std::mutex> locker(mutex_);
-      while (total_size_ >= MAX_SIZE) {
-        if (abort_func()) {
-          return false;
-        }
-        cond_.wait(locker);
-      }
+static CLSID g_bmp_clsid;
 
-      was_empty = queue_.empty();
-
-      queue_.push(data);
-      total_size_ += data->len;
-    }
-
-    if (was_empty) {
-      cond_.notify_all();
-    }
-
-    return true;
-  }
-
-  template <typename T = std::false_type>
-  bool Pop(AVData** data, T abort_func = T()) {
-    bool was_full;
-    {
-      std::unique_lock<std::mutex> locker(mutex_);
-      while (queue_.empty()) {
-        if (abort_func()) {
-          return false;
-        }
-        cond_.wait(locker);
-      }
-
-      was_full = total_size_ >= MAX_SIZE;
-
-      *data = queue_.front();
-      queue_.pop();
-      total_size_ -= (*data)->len;
-    }
-
-    if (was_full) {
-      cond_.notify_all();
-    }
-
-    return true;
-  }
-
-  void Clear() {
-    std::unique_lock<std::mutex> locker(mutex_);
-    while (!queue_.empty()) {
-      AVData* data = queue_.front();
-      if (data) {
-        total_size_ -= data->len;
-        delete data;
-      }
-
-      queue_.pop();
-    }
-
-    DCHECK(total_size_ == 0);
-  }
-
-  void Notify() { cond_.notify_all(); }
-
- private:
-  bool IsFull() const { return total_size_ >= MAX_SIZE; }
-
-  uint32_t total_size_;
-  std::queue<AVData*> queue_;
-
-  std::mutex mutex_;
-  std::condition_variable cond_;
-
-  DataQueue(const DataQueue&) = delete;
-  DataQueue& operator=(const DataQueue&) = delete;
-};  // class DataQueue
-
-static DataQueue<kMaxSize> g_data_queue;
-
-void CaptureThread() {
-  double interval = 1000.0 / kFps;
-
-  const auto start_time = std::chrono::high_resolution_clock::now();
-  auto current_time = start_time;
-
-  uint64_t pts = 0;
-  int count = 0;
-  while (count++ < kFrameCount) {
-    current_time = std::chrono::high_resolution_clock::now();
-    pts = std::llround(
-        std::chrono::duration<double, std::milli>(current_time - start_time)
-            .count());
-
-    AVData* av_data = g_picture_capturer->CaptureScreen();
-    av_data->timestamp = pts;
-
-    auto abort_func = []() { return false; };
-    g_data_queue.Push(av_data, abort_func);
-  }
-
-  const auto end_time = std::chrono::high_resolution_clock::now();
-  double total_time =
-      std::chrono::duration<double>(end_time - start_time).count();
-  double fps = count / total_time;
-  printf("耗时 %.3f 秒，FPS: %.3f\n", total_time, fps);
-
-  g_exit = true;
+int64_t GetCurrentMilliseconds() {
+  auto now = std::chrono::system_clock::now();
+  auto duration = now.time_since_epoch();
+  int64_t milliseconds =
+      std::chrono::duration_cast<std::chrono::milliseconds>(duration).count();
+  return milliseconds;
 }
 
-int main() {
-  g_picture_capturer = new PictureCapturerGdi();
-
-  AVData* picture = g_picture_capturer->CaptureScreen();
-  VideoConfig video_config;
-  video_config.width = picture->width;
-  video_config.height = picture->height;
-  video_config.fps = kFps;
-  video_config.input_pixel_format = AV_PIX_FMT_RGB32;
-
-  delete picture;
-
-  std::unique_ptr<AVMuxer> av_muxer =
-      std::make_unique<AVMuxer>(AudioConfig(), video_config, "1.mp4", false);
-  if (!av_muxer->Initialize()) {
-    return 0;
-  }
-  if (!av_muxer->Open()) {
-    return 0;
+uint8_t* ARGBToRGB(const uint8_t* argb, int width, int height) {
+  // argb[0] -> b
+  // argb[1] -> g
+  // argb[2] -> r
+  // argb[3] -> a
+  // ......
+  // rgb[0]  -> b
+  // rgb[1]  -> g
+  // rgb[2]  -> r
+  // ......
+  uint8_t* rgb = new uint8_t[width * height * 3];
+  const int len = width * height;
+  for (int j = 0; j < len; ++j) {
+    rgb[3 * j] = argb[j * 4];
+    rgb[3 * j + 1] = argb[j * 4 + 1];
+    rgb[3 * j + 2] = argb[j * 4 + 2];
   }
 
-  auto abort_func = []() {
-    if (g_exit)
-      return true;
-    return false;
-  };
+  return rgb;
+}
 
-  std::thread capture_thread = std::thread(CaptureThread);
+void SaveBMP(PixelFormat format,
+             uint8_t* data,
+             int width,
+             int height,
+             int len,
+             const wchar_t* path) {
+  Gdiplus::Bitmap bitmap(width, height, len / height, format, data);
+  bitmap.Save(path, &g_bmp_clsid, NULL);
+}
 
-  while (true) {
-    if (!g_data_queue.Pop(&picture, abort_func)) {
-      break;
+std::wstring GenerateOutDir() {
+  const int len = 1024;
+  wchar_t path[len];
+  memset(path, 0, sizeof(wchar_t) * len);
+
+  GetModuleFileName(NULL, path, len);
+  PathRemoveFileSpec(path);
+
+  PathAppend(path, L"out");
+  DWORD fileattr = ::GetFileAttributes(path);
+  if (fileattr != INVALID_FILE_ATTRIBUTES) {
+    if ((fileattr & FILE_ATTRIBUTE_DIRECTORY) == 0) {
+      assert(false);
     }
-
-    int stride = picture->len / picture->height;
-    av_muxer->EncodeVideoFrame(picture->data, picture->width, picture->height, stride, picture->timestamp);
-    delete picture;
+  } else {
+    if (!CreateDirectory(path, NULL)) {
+      assert(false);
+    }
   }
 
-  av_muxer.reset();
-  printf("编码结束");
+  PathAppend(path, L"picture_capture");
+  fileattr = ::GetFileAttributes(path);
+  if (fileattr != INVALID_FILE_ATTRIBUTES) {
+    if ((fileattr & FILE_ATTRIBUTE_DIRECTORY) == 0) {
+      assert(false);
+    }
+  } else {
+    if (!CreateDirectory(path, NULL)) {
+      assert(false);
+    }
+  }
 
-  capture_thread.join();
+  wcsncat(path, L"\\", wcslen(L"\\"));
+  return std::wstring(path);
+}
 
+void GdiCaptureRGB24(const std::wstring& out_dir) {
+  HDC src_dc = GetWindowDC(g_hwnd);
+  HDC mem_dc = CreateCompatibleDC(src_dc);
+
+  const int bits_per_pixer = 24;
+  const int len = g_width * g_height * bits_per_pixer >> 3;
+
+  HBITMAP bitmap = CreateCompatibleBitmap(src_dc, g_width, g_height);
+  SelectObject(mem_dc, bitmap);
+
+  BITMAPINFO bitmap_info = {{sizeof(BITMAPINFOHEADER), g_width, -g_height, 1,
+                             bits_per_pixer, 0, 0, 0, 0, 0, 0},
+                            {}};
+
+  wchar_t output[kPathLen];
+  uint8_t* buffer = new uint8_t[len];
+
+  int count = 0;
+  while (count++ < kCount) {
+    BitBlt(mem_dc, 0, 0, g_width, g_height, src_dc, 0, 0, SRCCOPY);
+    GetDIBits(mem_dc, bitmap, 0, g_height, buffer, &bitmap_info,
+              DIB_RGB_COLORS);
+
+    memset(output, 0, sizeof(wchar_t) * kPathLen);
+    wsprintf(output, L"%lsgdi_rgb24_%ls.bmp", out_dir.c_str(),
+             std::to_wstring(GetCurrentMilliseconds()).c_str());
+    SaveBMP(PixelFormat24bppRGB, buffer, g_width, g_height, len, output);
+
+    std::this_thread::sleep_for(std::chrono::seconds(1));
+  }
+
+  DeleteObject(bitmap);
+  DeleteObject(mem_dc);
+  ReleaseDC(g_hwnd, src_dc);
+}
+
+void GdiCaptureRGB32(const std::wstring& out_dir) {
+  HDC src_dc = GetWindowDC(g_hwnd);
+  HDC mem_dc = CreateCompatibleDC(src_dc);
+
+  const int bits_per_pixer = 32;
+  const int len = g_width * g_height * bits_per_pixer >> 3;
+
+  HBITMAP bitmap = CreateCompatibleBitmap(src_dc, g_width, g_height);
+  SelectObject(mem_dc, bitmap);
+
+  BITMAPINFO bitmap_info = {{sizeof(BITMAPINFOHEADER), g_width, -g_height, 1,
+                             bits_per_pixer, 0, 0, 0, 0, 0, 0},
+                            {}};
+
+  wchar_t output[kPathLen];
+  uint8_t* buffer = new uint8_t[len];
+
+  int count = 0;
+  while (count++ < kCount) {
+    BitBlt(mem_dc, 0, 0, g_width, g_height, src_dc, 0, 0, SRCCOPY);
+    GetDIBits(mem_dc, bitmap, 0, g_height, buffer, &bitmap_info, DIB_RGB_COLORS);
+
+    memset(output, 0, sizeof(wchar_t) * kPathLen);
+    wsprintf(output, L"%lsgdi_rgb32_%ls.bmp", out_dir.c_str(),
+             std::to_wstring(GetCurrentMilliseconds()).c_str());
+    SaveBMP(PixelFormat32bppARGB, buffer, g_width, g_height, len, output);
+
+    std::this_thread::sleep_for(std::chrono::seconds(1));
+  }
+
+  DeleteObject(bitmap);
+  DeleteObject(mem_dc);
+  ReleaseDC(g_hwnd, src_dc);
+}
+
+void D3D9CaptureRGB24(const std::wstring& out_dir) {
+  std::unique_ptr<PictureCapturer> capturer(new PictureCapturerD3D9());
+
+  wchar_t output[kPathLen];
+  int count = 0;
+
+  while (count++ < kCount) {
+    AVData* data = capturer->CaptureScreen();
+    uint8_t* rgb = ARGBToRGB(data->data, data->width, data->height);
+
+    wsprintf(output, L"%lsd3d9_rgb24_%ls.bmp", out_dir.c_str(),
+             std::to_wstring(GetCurrentMilliseconds()).c_str());
+    SaveBMP(PixelFormat24bppRGB, rgb, data->width, data->height,
+            data->width * data->height * 3, output);
+
+    delete data;
+    delete rgb;
+    std::this_thread::sleep_for(std::chrono::seconds(1));
+  }
+}
+
+void D3D9CaptureRGB32(const std::wstring& out_dir) {
+  std::unique_ptr<PictureCapturer> capturer(new PictureCapturerD3D9());
+
+  wchar_t output[kPathLen];
+  int count = 0;
+
+  while (count++ < kCount) {
+    AVData* data = capturer->CaptureScreen();
+
+    wsprintf(output, L"%lsd3d9_rgb32_%ls.bmp", out_dir.c_str(),
+             std::to_wstring(GetCurrentMilliseconds()).c_str());
+    SaveBMP(PixelFormat32bppARGB, data->data, data->width, data->height,
+            data->len, output);
+
+    std::this_thread::sleep_for(std::chrono::seconds(1));
+  }
+}
+
+int main(int argc, char** argv) {
+  GdiplusStartupInput gdiplus_startup_input;
+  ULONG_PTR gdiplus_token;
+
+  // 初始化GDI+
+  GdiplusStartup(&gdiplus_token, &gdiplus_startup_input, NULL);
+
+  // 屏幕尺寸
+  g_hwnd = GetDesktopWindow();
+  {
+    HMONITOR monitor = MonitorFromWindow(g_hwnd, MONITOR_DEFAULTTONEAREST);
+
+    MONITORINFOEX miex;
+    miex.cbSize = sizeof(MONITORINFOEX);
+    GetMonitorInfo(monitor, &miex);
+
+    DEVMODE dm;
+    dm.dmSize = sizeof(DEVMODE);
+    dm.dmDriverExtra = 0;
+    EnumDisplaySettings(miex.szDevice, ENUM_CURRENT_SETTINGS, &dm);
+
+    g_width = dm.dmPelsWidth;
+    g_height = dm.dmPelsHeight;
+  }
+
+  // jpg  {557cf401-1a04-11d3-9a73-0000f81ef32e}
+  // bmp  {557cf400-1a04-11d3-9a73-0000f81ef32e}
+  // png  {557cf406-1a04-11d3-9a73-0000f81ef32e}
+  // gif  {557cf402-1a04-11d3-9a73-0000f81ef32e}
+  // tif  {557cf405-1a04-11d3-9a73-0000f81ef32e}
+  CLSIDFromString(L"{557cf400-1a04-11d3-9a73-0000f81ef32e}", &g_bmp_clsid);
+
+  std::wstring out_dir = GenerateOutDir();
+  std::thread capture_gdi_rgb24 = std::thread(GdiCaptureRGB24, out_dir);
+  std::thread capture_gdi_rgb32 = std::thread(GdiCaptureRGB32, out_dir);
+  std::thread capture_d3d9_rgb24 = std::thread(D3D9CaptureRGB24, out_dir);
+  std::thread capture_d3d9_rgb32 = std::thread(D3D9CaptureRGB32, out_dir);
+
+  capture_gdi_rgb24.join();
+  capture_gdi_rgb32.join();
+  capture_d3d9_rgb24.join();
+  capture_d3d9_rgb32.join();
+
+  GdiplusShutdown(gdiplus_token);
   return 0;
 }
