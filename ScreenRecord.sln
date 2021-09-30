@@ -22,6 +22,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "picture_capture", "demo\pic
 		{59696E93-9FA4-4DB6-9A12-57464B5EA657} = {59696E93-9FA4-4DB6-9A12-57464B5EA657}
 	EndProjectSection
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "encode_video", "demo\encode_video\encode_video.vcxproj", "{8DD0EF2E-2812-4286-A092-5F618D96A717}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -68,6 +70,14 @@ Global
 		{D9F7F750-7C69-452D-BB5B-ACB05F33164F}.Release|x64.Build.0 = Release|x64
 		{D9F7F750-7C69-452D-BB5B-ACB05F33164F}.Release|x86.ActiveCfg = Release|Win32
 		{D9F7F750-7C69-452D-BB5B-ACB05F33164F}.Release|x86.Build.0 = Release|Win32
+		{8DD0EF2E-2812-4286-A092-5F618D96A717}.Debug|x64.ActiveCfg = Debug|x64
+		{8DD0EF2E-2812-4286-A092-5F618D96A717}.Debug|x64.Build.0 = Debug|x64
+		{8DD0EF2E-2812-4286-A092-5F618D96A717}.Debug|x86.ActiveCfg = Debug|Win32
+		{8DD0EF2E-2812-4286-A092-5F618D96A717}.Debug|x86.Build.0 = Debug|Win32
+		{8DD0EF2E-2812-4286-A092-5F618D96A717}.Release|x64.ActiveCfg = Release|x64
+		{8DD0EF2E-2812-4286-A092-5F618D96A717}.Release|x64.Build.0 = Release|x64
+		{8DD0EF2E-2812-4286-A092-5F618D96A717}.Release|x86.ActiveCfg = Release|Win32
+		{8DD0EF2E-2812-4286-A092-5F618D96A717}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -75,6 +85,7 @@ Global
 	GlobalSection(NestedProjects) = preSolution
 		{0000C7E3-29CC-45C5-8CD8-9CC9E3F03635} = {428D2116-31F4-4B99-9954-821B14276077}
 		{D9F7F750-7C69-452D-BB5B-ACB05F33164F} = {428D2116-31F4-4B99-9954-821B14276077}
+		{8DD0EF2E-2812-4286-A092-5F618D96A717} = {428D2116-31F4-4B99-9954-821B14276077}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {58F3FA65-B58E-4BD9-9993-99A5C621D80D}
