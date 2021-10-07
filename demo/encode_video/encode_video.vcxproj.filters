@@ -6,6 +6,7 @@
     <ClCompile Include="picture_capturer_d3d9.cc" />
     <ClCompile Include="picture_capturer_gdi.cc" />
     <ClCompile Include="video_muxer.cc" />
+    <ClCompile Include="picture_capturer_dxgi.cc" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="picture_capturer.h" />
@@ -14,5 +15,7 @@
     <ClInclude Include="video_config.h" />
     <ClInclude Include="video_muxer.h" />
     <ClInclude Include="picture_queue.h" />
+    <ClInclude Include="picture_capturer_dxgi.h" />
+    <ClInclude Include="log.h" />
   </ItemGroup>
 </Project>

@@ -14,7 +14,9 @@
 #include <shlwapi.h>
 
 #include "gflags/gflags.h"
+#include "log.h"
 #include "picture_capturer_d3d9.h"
+#include "picture_capturer_dxgi.h"
 #include "picture_capturer_gdi.h"
 #include "picture_queue.h"
 #include "video_muxer.h"
@@ -26,15 +28,6 @@ DEFINE_int32(fps, 30, "帧率");
 DEFINE_int32(bit_rate, 1000000, "比特率");
 DEFINE_string(encoder_name, "libx264", "视频编码器名称");
 DEFINE_string(file_type, "mp4", "文件格式");
-
-#define LOG(format, ...)                                  \
-  do {                                                    \
-    fprintf(stderr, "[%lu %lu %s(%d)]: " format "\n",     \
-            GetCurrentProcessId(),                        \
-            GetCurrentThreadId(),                         \
-            __FILE__, __LINE__,                           \
-            ##__VA_ARGS__);                               \
-  } while (0)
 
 const int kPathLen = 2048;
 const int kMaxSize = 1024 * 1024 * 1024;
@@ -109,6 +102,9 @@ void CaptureThread(PictureCapturer* capturer) {
     pts = std::chrono::duration<double, std::milli>(start - start_time).count();
 
     PictureCapturer::Picture* picture = capturer->Capture();
+    if (!picture) {
+      continue;
+    }
     picture->pts = pts;
     g_picture_queue.Push(picture, abort_func);
 
@@ -158,12 +154,15 @@ int main(int argc, char** argv) {
     capturer = new PictureCapturerGdi(FLAGS_color_type);
   } else if (FLAGS_capturer == "d3d9") {
     capturer = new PictureCapturerD3D9(FLAGS_color_type);
+  } else if (FLAGS_capturer == "dxgi") {
+    capturer = new PictureCapturerDXGI(FLAGS_color_type);
   } else {
     assert(false && "请指定符合要求的截屏方式");
     return 1;
   }
 
   PictureCapturer::Picture* picture = capturer->Capture();
+  assert(picture);
   config.width = picture->width;
   config.height = picture->height;
   delete picture;

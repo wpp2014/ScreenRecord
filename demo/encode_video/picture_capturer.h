@@ -36,6 +36,8 @@ class PictureCapturer {
   virtual ~PictureCapturer() { }
 
   virtual Picture* Capture() = 0;
+
+  uint8_t* ARGBToRGB(const uint8_t* argb, int width, int height);
 };
 
 #endif  // PICTURE_CAPTURER_H_

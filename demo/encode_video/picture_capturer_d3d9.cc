@@ -1,15 +1,4 @@
-#include "picture_capturer_d3d9.h"
-
-uint8_t* ARGBToRGB(const uint8_t* argb, int width, int height) {
-  uint8_t* rgb = new uint8_t[width * height * 3];
-  const int len = width * height;
-  for (int j = 0; j < len; ++j) {
-    rgb[3 * j] = argb[j * 4];
-    rgb[3 * j + 1] = argb[j * 4 + 1];
-    rgb[3 * j + 2] = argb[j * 4 + 2];
-  }
-  return rgb;
-}
+ï»¿#include "picture_capturer_d3d9.h"
 
 PictureCapturerD3D9::PictureCapturerD3D9(int type) 
     : d3d9_initialized_(false), type_(type), width_(0), height_(0) {
@@ -82,8 +71,8 @@ bool PictureCapturerD3D9::InitD3D9() {
   d3d9_param.Windowed = TRUE;
   d3d9_param.SwapEffect = D3DSWAPEFFECT_COPY;
 
-  // D3DDEVTYPE_REF: ÈíäÖÈ¾£¬ËÙ¶È½ÏÂý£¬¼æÈÝÐÔ¸ß
-  // D3DDEVTYPE_HAL: Ö§³ÖÓ²¼þ¼ÓËÙ£¬ÐÔÄÜ¸ß£¬¼æÈÝÐÔÂÔµÍ
+  // D3DDEVTYPE_REF: è½¯æ¸²æŸ“ï¼Œé€Ÿåº¦è¾ƒæ…¢ï¼Œå…¼å®¹æ€§é«˜
+  // D3DDEVTYPE_HAL: æ”¯æŒç¡¬ä»¶åŠ é€Ÿï¼Œæ€§èƒ½é«˜ï¼Œå…¼å®¹æ€§ç•¥ä½Ž
   hr = d3d9_->CreateDevice(D3DADAPTER_DEFAULT, D3DDEVTYPE_HAL,
                            GetDesktopWindow(),
                            D3DCREATE_HARDWARE_VERTEXPROCESSING, &d3d9_param,
