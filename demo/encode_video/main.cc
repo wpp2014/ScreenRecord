@@ -3,6 +3,8 @@
 //   https://zhuanlan.zhihu.com/p/75804693
 //  编码相关
 //   https://stackoverflow.com/questions/46444474/c-ffmpeg-create-mp4-file
+//  DXGI抓屏优化
+//   https://blog.csdn.net/xjb2006/article/details/107079312
 
 #include <assert.h>
 #include <stdio.h>
@@ -23,7 +25,7 @@
 
 DEFINE_string(capturer, "gdi", "截屏方式");
 DEFINE_int32(color_type, 0, "颜色，0: rgb, 1: argb");
-DEFINE_int32(frame_count, 512, "帧数");
+DEFINE_int32(time, 30, "录屏时间");
 DEFINE_int32(fps, 30, "帧率");
 DEFINE_int32(bit_rate, 1000000, "比特率");
 DEFINE_string(encoder_name, "libx264", "视频编码器名称");
@@ -97,7 +99,7 @@ void CaptureThread(PictureCapturer* capturer) {
   int count = 0;
   auto t1 = start_time;
   auto t2 = start_time;
-  while (current_count++ < FLAGS_frame_count) {
+  while (true) {
     start = std::chrono::high_resolution_clock::now();
     pts = std::chrono::duration<double, std::milli>(start - start_time).count();
 
@@ -109,6 +111,12 @@ void CaptureThread(PictureCapturer* capturer) {
     g_picture_queue.Push(picture, abort_func);
 
     end = std::chrono::high_resolution_clock::now();
+
+    delta = std::chrono::duration<double>(end - start_time).count();
+    if (delta > FLAGS_time) {
+      break;
+    }
+
     delta = std::chrono::duration<double, std::milli>(end - start).count();
     if (interval > delta) {
       std::this_thread::sleep_for(
@@ -135,7 +143,7 @@ int main(int argc, char** argv) {
   google::ParseCommandLineFlags(&argc, &argv, true);
   assert(FLAGS_fps > 0);
   assert(FLAGS_bit_rate > 0);
-  assert(FLAGS_frame_count > 0);
+  assert(FLAGS_time > 0);
   assert(!FLAGS_capturer.empty());
   assert(!FLAGS_encoder_name.empty());
   assert(!FLAGS_file_type.empty());
@@ -188,7 +196,7 @@ int main(int argc, char** argv) {
 
   printf("\n\n");
   LOG("帧率: %d", FLAGS_fps);
-  LOG("截屏帧数: %d", FLAGS_frame_count);
+  LOG("录屏时间: %d秒", FLAGS_time);
   LOG("截屏方式: %s", FLAGS_capturer.c_str());
   LOG("颜色值: %s", color_name);
   LOG("输出文件: %s\n\n", filepath);
