@@ -94,7 +94,7 @@
     <ClCompile>
       <WarningLevel>Level4</WarningLevel>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>WIN32;_DEBUG;GLOG_NO_ABBREVIATED_SEVERITIES;GOOGLE_GLOG_DLL_DECL=;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_CRT_SECURE_NO_WARNINGS;GLOG_NO_ABBREVIATED_SEVERITIES;GOOGLE_GLOG_DLL_DECL=;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <AdditionalIncludeDirectories>..;$(VcpkgPath)\x86-windows\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
@@ -111,7 +111,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>false</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>WIN32;NDEBUG;GLOG_NO_ABBREVIATED_SEVERITIES;GOOGLE_GLOG_DLL_DECL=;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_CRT_SECURE_NO_WARNINGS;GLOG_NO_ABBREVIATED_SEVERITIES;GOOGLE_GLOG_DLL_DECL=;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <AdditionalIncludeDirectories>..;$(VcpkgPath)\x86-windows\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>None</DebugInformationFormat>
@@ -160,6 +160,7 @@
   <ItemGroup>
     <ClCompile Include="picture_capturer.cc" />
     <ClCompile Include="picture_capturer_d3d9.cc" />
+    <ClCompile Include="picture_capturer_dxgi.cc" />
     <ClCompile Include="picture_capturer_gdi.cc" />
     <ClCompile Include="voice_capturer.cc" />
   </ItemGroup>
@@ -167,6 +168,7 @@
     <ClInclude Include="av_data.h" />
     <ClInclude Include="picture_capturer.h" />
     <ClInclude Include="picture_capturer_d3d9.h" />
+    <ClInclude Include="picture_capturer_dxgi.h" />
     <ClInclude Include="picture_capturer_gdi.h" />
     <ClInclude Include="voice_capturer.h" />
   </ItemGroup>

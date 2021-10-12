@@ -5,6 +5,7 @@
     <ClCompile Include="picture_capturer_d3d9.cc" />
     <ClCompile Include="picture_capturer_gdi.cc" />
     <ClCompile Include="voice_capturer.cc" />
+    <ClCompile Include="picture_capturer_dxgi.cc" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="picture_capturer.h" />
@@ -12,5 +13,6 @@
     <ClInclude Include="picture_capturer_gdi.h" />
     <ClInclude Include="voice_capturer.h" />
     <ClInclude Include="av_data.h" />
+    <ClInclude Include="picture_capturer_dxgi.h" />
   </ItemGroup>
 </Project>
