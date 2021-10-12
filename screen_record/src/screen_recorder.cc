@@ -5,11 +5,13 @@
 #include <QtCore/QDateTime>
 
 #include "capturer/picture_capturer_d3d9.h"
+#include "capturer/picture_capturer_dxgi.h"
 #include "capturer/picture_capturer_gdi.h"
 #include "capturer/voice_capturer.h"
 #include "encoder/av_config.h"
 #include "encoder/av_muxer.h"
 #include "glog/logging.h"
+#include "screen_record/src/argument.h"
 #include "screen_record/src/util/time_helper.h"
 
 namespace {
@@ -33,6 +35,44 @@ std::string GenerateOutputPath(const std::string& output_dir) {
   std::string output_path;
   output_path.append(output_dir).append("/").append(filename);
   return output_path;
+}
+
+// 缩放比例
+double GetScale() {
+  HWND hwnd = GetDesktopWindow();
+  HMONITOR hmonitor = MonitorFromWindow(hwnd, MONITOR_DEFAULTTONEAREST);
+
+  MONITORINFOEX miex;
+  miex.cbSize = sizeof(MONITORINFOEX);
+  GetMonitorInfo(hmonitor, &miex);
+  const double logical_width =
+      static_cast<double>(miex.rcMonitor.right - miex.rcMonitor.left);
+
+  DEVMODE dm;
+  dm.dmSize = sizeof(DEVMODE);
+  dm.dmDriverExtra = 0;
+  EnumDisplaySettings(miex.szDevice, ENUM_CURRENT_SETTINGS, &dm);
+  const double physical_width = (double)dm.dmPelsWidth;
+
+  return physical_width / logical_width;
+}
+
+// 获取屏幕尺寸
+void GetScreenSize(int* width, int* height) {
+  DCHECK(width && height);
+
+  HDC screen_dc = ::GetDC(NULL);
+  const int bits_per_pixel = ::GetDeviceCaps(screen_dc, BITSPIXEL);
+  ReleaseDC(NULL, screen_dc);
+
+  double scale = GetScale();
+  int w = GetSystemMetrics(SM_CXVIRTUALSCREEN);
+  int h = GetSystemMetrics(SM_CYVIRTUALSCREEN);
+
+  w = static_cast<int>(w * scale);
+  h = static_cast<int>(h * scale);
+  *width = w;
+  *height = h;
 }
 
 };  // namespace
@@ -112,13 +152,10 @@ void ScreenRecorder::restartRecord() {
 void ScreenRecorder::run() {
   LOG(INFO) << "开始录屏";
 
-  // 先抓取一张图片，获取宽和高
-  std::unique_ptr<PictureCapturer> picture_capturer(new PictureCapturerD3D9());
-  AVData* av_data = picture_capturer->CaptureScreen();
-  if (!av_data) {
-    on_recording_failed_();
-    return;
-  }
+  // 获取屏幕宽高
+  int width = 0;
+  int height = 0;
+  GetScreenSize(&width, &height);
 
   AudioConfig audio_config;
   audio_config.channels = kChannels;
@@ -127,13 +164,10 @@ void ScreenRecorder::run() {
   audio_config.channel_layout = AV_CH_LAYOUT_STEREO;
 
   VideoConfig video_config;
-  video_config.width = av_data->width;
-  video_config.height = av_data->height;
+  video_config.width = width;
+  video_config.height = height;
   video_config.fps = fps_;
   video_config.input_pixel_format = AV_PIX_FMT_RGB32;
-
-  picture_capturer.reset(nullptr);
-  delete av_data;
 
   std::string filepath = GenerateOutputPath(output_dir_);
   std::unique_ptr<AVMuxer> av_muxer =
@@ -148,7 +182,7 @@ void ScreenRecorder::run() {
   }
 
   while (true) {
-    av_data = nullptr;
+    AVData* av_data = nullptr;
     if (!data_queue_.Pop(&av_data, abort_func_)) {
       break;
     }
@@ -200,7 +234,17 @@ void ScreenRecorder::capturePictureThread(int fps) {
   // 截屏的频率
   double interval = 1000.0 / fps;
 
-  std::unique_ptr<PictureCapturer> picture_capturer(new PictureCapturerD3D9());
+  PictureCapturer* capturer = nullptr;
+  if (stricmp(FLAGS_capturer.c_str(), "gdi") == 0) {
+    capturer = new PictureCapturerGdi();
+  } else if (stricmp(FLAGS_capturer.c_str(), "d3d9") == 0) {
+    capturer = new PictureCapturerD3D9();
+  } else if (stricmp(FLAGS_capturer.c_str(), "dxgi") == 0) {
+    capturer = new PictureCapturerDXGI();
+  } else {
+    CHECK(false) << "不支持的截屏方式";
+  }
+
   const auto start_time = std::chrono::high_resolution_clock::now();
   auto start = start_time;
   auto end = start_time;
@@ -221,7 +265,7 @@ void ScreenRecorder::capturePictureThread(int fps) {
       break;
     }
 
-    AVData* av_data = picture_capturer->CaptureScreen();
+    AVData* av_data = capturer->CaptureScreen();
     if (!av_data) {
       LOG(ERROR) << "截屏失败";
     } else {
@@ -264,6 +308,8 @@ void ScreenRecorder::capturePictureThread(int fps) {
   sprintf(info, "截屏操作结束，耗时%.3f秒，截取%u帧，帧率: %.3f",
           diff, count, count / diff);
   LOG(INFO) << info;
+
+  delete capturer;
 
   // 队列发送通知，解决暂停录屏之后直接点击停止按钮，导致编码线程阻塞的问题
   data_queue_.Notify();

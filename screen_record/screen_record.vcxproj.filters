@@ -37,6 +37,9 @@
     <ClCompile Include="src\util\string.cc">
       <Filter>Source Files\util</Filter>
     </ClCompile>
+    <ClCompile Include="src\argument.cc">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <QtUic Include="ui\main_window.ui">
@@ -68,6 +71,9 @@
     </ClInclude>
     <ClInclude Include="src\util\string.h">
       <Filter>Source Files\util</Filter>
+    </ClInclude>
+    <ClInclude Include="src\argument.h">
+      <Filter>Source Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

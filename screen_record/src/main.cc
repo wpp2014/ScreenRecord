@@ -3,7 +3,9 @@
 #include <QtCore/QTextCodec>
 #include <QtWidgets/QApplication>
 
+#include "gflags/gflags.h"
 #include "glog/logging.h"
+#include "screen_record/src/argument.h"
 #include "screen_record/src/main_window.h"
 #include "screen_record/src/util/string.h"
 
@@ -26,9 +28,16 @@ void InitLogging() {
 }
 
 int main(int argc, char** argv) {
-  QApplication app(argc, argv);
-
   CoInitialize(NULL);
+
+  // 使用gflags解析命令行参数
+  // false表示则argv和argc会被保留，但是argv中的顺序可能会改变
+  google::ParseCommandLineFlags(&argc, &argv, false);
+
+  LOG(INFO) << "帧率: " << FLAGS_fps;
+  LOG(INFO) << "截屏方式: " << FLAGS_capturer;
+
+  QApplication app(argc, argv);
 
   google::InitGoogleLogging(argv[0]);
   InitLogging();

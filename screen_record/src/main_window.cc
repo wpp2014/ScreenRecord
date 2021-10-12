@@ -8,6 +8,7 @@
 
 #include "glog/logging.h"
 #include "res/version.h"
+#include "screen_record/src/argument.h"
 #include "screen_record/src/screen_recorder.h"
 #include "screen_record/src/util/string.h"
 
@@ -140,7 +141,12 @@ void MainWindow::start() {
       [this]() { emit recordCanceled(); },
       [this]() { emit recordFailed(); }
   );
-  screen_recorder_->startRecord(local_path_.absolutePath(), 30);
+
+  if (FLAGS_fps < 16 || FLAGS_fps > 60) {
+    LOG(WARNING) << "fpt的范围不符合要求（[16, 60]），重置为30.";
+    FLAGS_fps = 30;
+  }
+  screen_recorder_->startRecord(local_path_.absolutePath(), FLAGS_fps);
 
   record_time_ = 0;
 
