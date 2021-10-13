@@ -38,6 +38,7 @@ std::string GenerateOutputPath(const std::string& output_dir) {
 }
 
 // 缩放比例
+#if 0
 double GetScale() {
   HWND hwnd = GetDesktopWindow();
   HMONITOR hmonitor = MonitorFromWindow(hwnd, MONITOR_DEFAULTTONEAREST);
@@ -56,23 +57,25 @@ double GetScale() {
 
   return physical_width / logical_width;
 }
+#endif
 
 // 获取屏幕尺寸
 void GetScreenSize(int* width, int* height) {
   DCHECK(width && height);
 
-  HDC screen_dc = ::GetDC(NULL);
-  const int bits_per_pixel = ::GetDeviceCaps(screen_dc, BITSPIXEL);
-  ReleaseDC(NULL, screen_dc);
+  HMONITOR monitor =
+      MonitorFromWindow(GetDesktopWindow(), MONITOR_DEFAULTTOPRIMARY);
+  DCHECK(monitor);
 
-  double scale = GetScale();
-  int w = GetSystemMetrics(SM_CXVIRTUALSCREEN);
-  int h = GetSystemMetrics(SM_CYVIRTUALSCREEN);
+  MONITORINFO mi;
+  ZeroMemory(&mi, sizeof(mi));
+  mi.cbSize = sizeof(mi);
 
-  w = static_cast<int>(w * scale);
-  h = static_cast<int>(h * scale);
-  *width = w;
-  *height = h;
+  BOOL res = GetMonitorInfo(monitor, &mi);
+  DCHECK(res);
+
+  *width = mi.rcMonitor.right - mi.rcMonitor.left;
+  *height = mi.rcMonitor.bottom - mi.rcMonitor.top;
 }
 
 };  // namespace
@@ -192,8 +195,8 @@ void ScreenRecorder::run() {
     } else if (av_data->type == AVData::VIDEO) {
       int stride = av_data->len / av_data->height;
       int pts = std::llround(av_data->timestamp);
-      av_muxer->EncodeVideoFrame(av_data->data, av_data->width, av_data->height,
-                                 stride, pts);
+      av_muxer->EncodeVideoFrame(
+          av_data->data, av_data->width, av_data->height, stride, pts);
     } else {
       Q_ASSERT(false);
     }
