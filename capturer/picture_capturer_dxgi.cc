@@ -25,18 +25,20 @@ PictureCapturerDXGI::PictureCapturerDXGI()
 PictureCapturerDXGI::~PictureCapturerDXGI() {
 }
 
-AVData* PictureCapturerDXGI::CaptureScreen() {
+bool PictureCapturerDXGI::CaptureScreen(AVData** av_data) {
+  DCHECK(av_data);
+
   ComPtr<IDXGIResource> dxgi_resource;
   DXGI_OUTDUPL_FRAME_INFO frame_info;
   HRESULT hr = desk_dupl_->AcquireNextFrame(
       500, &frame_info, dxgi_resource.GetAddressOf());
   if (hr == DXGI_ERROR_WAIT_TIMEOUT) {
     LOG(INFO) << "屏幕没有发生变化";
-    return nullptr;
+    return true;
   }
   if (FAILED(hr)) {
     LOG(ERROR) << "抓屏失败: " << NumToHexStr(hr);
-    return nullptr;
+    return false;
   }
 
   acquired_desktop_image_.Reset();
@@ -44,7 +46,7 @@ AVData* PictureCapturerDXGI::CaptureScreen() {
   if (FAILED(hr)) {
     LOG(ERROR) << "Failed to desktop image: " << NumToHexStr(hr);
     desk_dupl_->ReleaseFrame();
-    return nullptr;
+    return false;
   }
 
   d3d11_device_context_->CopyResource(
@@ -60,7 +62,7 @@ AVData* PictureCapturerDXGI::CaptureScreen() {
   if (FAILED(hr)) {
     LOG(ERROR) << "Failed to get DXGISurface: " << NumToHexStr(hr);
     desk_dupl_->ReleaseFrame();
-    return nullptr;
+    return false;
   }
 
   DXGI_MAPPED_RECT dxgi_mapped_rect;
@@ -68,31 +70,33 @@ AVData* PictureCapturerDXGI::CaptureScreen() {
   if (FAILED(hr)) {
     LOG(ERROR) << "Failed to map DXGISurface: " << NumToHexStr(hr);
     desk_dupl_->ReleaseFrame();
-    return nullptr;
+    return false;
   }
 
   D3D11_TEXTURE2D_DESC full_desc;
   shared_image_->GetDesc(&full_desc);
 
-  AVData* av_data = new AVData();
-  av_data->type = AVData::VIDEO;
-  av_data->width = full_desc.Width;
-  av_data->height = full_desc.Height;
-  av_data->len = full_desc.Width * full_desc.Height * 4;;
-  av_data->data = new uint8_t[av_data->len];
-  memcpy(av_data->data, (uint8_t*)dxgi_mapped_rect.pBits, av_data->len);
+  AVData* tmp = new AVData();
+  tmp->type = AVData::VIDEO;
+  tmp->width = full_desc.Width;
+  tmp->height = full_desc.Height;
+  tmp->len = full_desc.Width * full_desc.Height * 4;
+  tmp->data = new uint8_t[tmp->len];
+  memcpy(tmp->data, (uint8_t*)dxgi_mapped_rect.pBits, sizeof(uint8_t) * tmp->len);
+
+  *av_data = tmp;
 
   hr = dxgi_surface->Unmap();
   if (FAILED(hr)) {
     LOG(ERROR) << "Failed to unmap IDXGISurface: " << NumToHexStr(hr);
     desk_dupl_->ReleaseFrame();
-    delete av_data;
-    av_data = nullptr;
-    return nullptr;
+    delete *av_data;
+    *av_data = nullptr;
+    return false;
   }
 
   desk_dupl_->ReleaseFrame();
-  return av_data;
+  return true;
 }
 
 bool PictureCapturerDXGI::InitDXGI() {

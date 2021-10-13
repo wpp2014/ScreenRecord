@@ -11,7 +11,7 @@ class PictureCapturerD3D9 : public PictureCapturer {
   PictureCapturerD3D9();
   ~PictureCapturerD3D9();
 
-  AVData* CaptureScreen() override;
+  bool CaptureScreen(AVData** av_data) override;
 
  private:
   bool InitD3D9();

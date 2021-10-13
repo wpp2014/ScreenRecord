@@ -55,7 +55,9 @@ PictureCapturerGdi::~PictureCapturerGdi() {
   ReleaseDC(hwnd_, src_dc_);
 }
 
-AVData* PictureCapturerGdi::CaptureScreen() {
+bool PictureCapturerGdi::CaptureScreen(AVData** av_data) {
+  DCHECK(av_data);
+
   old_selected_bitmap_ = SelectObject(memory_dc_, bitmap_frame_);
 
   BOOL res = BitBlt(memory_dc_,
@@ -65,21 +67,21 @@ AVData* PictureCapturerGdi::CaptureScreen() {
                     SRCCOPY);
   if (!res) {
     SelectObject(memory_dc_, old_selected_bitmap_);
-    return nullptr;
+    return false;
   }
 
   // 绘制鼠标
   DrawMouseIcon(memory_dc_);
 
-  const int len = width_ * height_ * 4;
-  AVData* av_data = new AVData();
-  av_data->type = AVData::VIDEO;
-  av_data->width = width_;
-  av_data->height = height_;
-  av_data->len = len;
+  AVData* tmp = new AVData();
+  tmp->type = AVData::VIDEO;
+  tmp->len = width_ * height_ * 4;
+  tmp->width = width_;
+  tmp->height = height_;
+  tmp->data = new uint8_t[tmp->len];
+  memcpy(tmp->data, bitmap_data_, sizeof(uint8_t) * tmp->len);
 
-  av_data->data = new uint8_t[len];
-  memcpy(av_data->data, bitmap_data_, sizeof(uint8_t) * len);
+  *av_data = tmp;
 
   SelectObject(memory_dc_, old_selected_bitmap_);
   return av_data;

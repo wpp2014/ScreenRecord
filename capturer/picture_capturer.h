@@ -10,7 +10,9 @@ class PictureCapturer {
   PictureCapturer() { }
   virtual ~PictureCapturer() { }
 
-  virtual AVData* CaptureScreen() = 0;
+  // DXGI截屏会存在屏幕没有发生变化而不截屏的情况
+  // 这种情况是正常的，但是av_data会为nullptr
+  virtual bool CaptureScreen(AVData** av_data) = 0;
 
  protected:
   void DrawMouseIcon(HDC hdc);

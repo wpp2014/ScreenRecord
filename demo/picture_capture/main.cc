@@ -175,7 +175,11 @@ void D3D9CaptureRGB24(const std::wstring& out_dir) {
   int count = 0;
 
   while (count++ < kCount) {
-    AVData* data = capturer->CaptureScreen();
+    AVData* data = nullptr;
+    if (!capturer->CaptureScreen(&data)) {
+      printf("抓屏失败\n");
+      break;
+    }
     uint8_t* rgb = ARGBToRGB(data->data, data->width, data->height);
 
     wsprintf(output, L"%lsd3d9_rgb24_%ls.bmp", out_dir.c_str(),
@@ -196,7 +200,11 @@ void D3D9CaptureRGB32(const std::wstring& out_dir) {
   int count = 0;
 
   while (count++ < kCount) {
-    AVData* data = capturer->CaptureScreen();
+    AVData* data = nullptr;
+    if (!capturer->CaptureScreen(&data)) {
+      printf("抓屏失败\n");
+      break;
+    }
 
     wsprintf(output, L"%lsd3d9_rgb32_%ls.bmp", out_dir.c_str(),
              std::to_wstring(GetCurrentMilliseconds()).c_str());

@@ -10,7 +10,7 @@ class PictureCapturerGdi : public PictureCapturer {
   PictureCapturerGdi();
   ~PictureCapturerGdi() override;
 
-  AVData* CaptureScreen() override;
+  bool CaptureScreen(AVData** av_data) override;
 
  private:
   HWND hwnd_;

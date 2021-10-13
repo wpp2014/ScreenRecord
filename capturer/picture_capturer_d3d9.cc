@@ -18,9 +18,11 @@ PictureCapturerD3D9::~PictureCapturerD3D9() {
 }
 
 // https://blog.csdn.net/qianbo042311/article/details/117535125
-AVData* PictureCapturerD3D9::CaptureScreen() {
+bool PictureCapturerD3D9::CaptureScreen(AVData** av_data) {
+  DCHECK(av_data);
+
   if (!d3d9_initialized_) {
-    return nullptr;
+    return false;
   }
 
   D3DLOCKED_RECT lr;
@@ -28,7 +30,7 @@ AVData* PictureCapturerD3D9::CaptureScreen() {
   HRESULT hr = d3d9_device_->GetFrontBufferData(0, dest_target_.Get());
   if (FAILED(hr)) {
     LOG(ERROR) << "GetFrontBufferData failed";
-    return nullptr;
+    return false;
   }
 
   // 绘制鼠标
@@ -40,22 +42,19 @@ AVData* PictureCapturerD3D9::CaptureScreen() {
 
   hr = dest_target_->LockRect(&lr, NULL, D3DLOCK_READONLY);
   if (FAILED(hr) || !lr.pBits) {
-    nullptr;
+    return false;
   }
 
-  const int len = height_ * lr.Pitch;
-
-  AVData* av_data = new AVData();
-  av_data->type = AVData::VIDEO;
-  av_data->len = len;
-  av_data->width = width_;
-  av_data->height = height_;
-
-  av_data->data = new uint8_t[len];
-  memcpy(av_data->data, lr.pBits, sizeof(uint8_t) * len);
+  AVData* tmp = new AVData();
+  tmp->type = AVData::VIDEO;
+  tmp->len = height_ * lr.Pitch;;
+  tmp->width = width_;
+  tmp->height = height_;
+  tmp->data = new uint8_t[tmp->len];
+  memcpy(tmp->data, lr.pBits, sizeof(uint8_t) * tmp->len);
 
   dest_target_->UnlockRect();
-  return av_data;
+  return true;
 }
 
 bool PictureCapturerD3D9::InitD3D9() {

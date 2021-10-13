@@ -13,7 +13,7 @@ class PictureCapturerDXGI : public PictureCapturer {
   PictureCapturerDXGI();
   ~PictureCapturerDXGI();
 
-  AVData* CaptureScreen() override;
+  bool CaptureScreen(AVData** av_data) override;
 
  private:
   // 鼠标指针信息

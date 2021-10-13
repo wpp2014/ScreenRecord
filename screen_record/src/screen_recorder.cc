@@ -254,6 +254,8 @@ void ScreenRecorder::capturePictureThread(int fps) {
 
   auto t1 = std::chrono::high_resolution_clock::now();
 
+  bool capture_result = true;
+
   uint32_t count = 0;
   uint64_t pts = 0;
   uint64_t pause_time = 0;
@@ -268,9 +270,10 @@ void ScreenRecorder::capturePictureThread(int fps) {
       break;
     }
 
-    AVData* av_data = capturer->CaptureScreen();
-    if (!av_data) {
-      LOG(ERROR) << "截屏失败";
+    AVData* av_data = nullptr;
+    if (!capturer->CaptureScreen(&av_data)) {
+      capture_result = false;
+      break;
     } else {
       av_data->timestamp = pts;
       if (!data_queue_.Push(av_data, abort_func_)) {
@@ -299,18 +302,27 @@ void ScreenRecorder::capturePictureThread(int fps) {
     }
   }
 
-  auto t2 = std::chrono::high_resolution_clock::now();
-  double diff =
-      std::chrono::duration<double>(t2 - t1).count() - pause_time / 1000.0;
+  if (capture_result) {
+    auto t2 = std::chrono::high_resolution_clock::now();
+    double diff =
+        std::chrono::duration<double>(t2 - t1).count() - pause_time / 1000.0;
 
-  // 结束录音
-  voice_capturer_->Stop();
+    // 结束录音
+    voice_capturer_->Stop();
 
-  char info[1024];
-  memset(info, 0, 1024);
-  sprintf(info, "截屏操作结束，耗时%.3f秒，截取%u帧，帧率: %.3f",
-          diff, count, count / diff);
-  LOG(INFO) << info;
+    char info[1024];
+    memset(info, 0, 1024);
+    sprintf(info, "截屏操作结束，耗时%.3f秒，截取%u帧，帧率: %.3f", diff, count,
+            count / diff);
+    LOG(INFO) << info;
+  } else {
+    LOG(ERROR) << "抓屏失败";
+
+    // 结束录音
+    voice_capturer_->Stop();
+
+    on_recording_failed_();
+  }
 
   delete capturer;
 
