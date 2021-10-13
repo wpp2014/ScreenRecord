@@ -5,7 +5,7 @@
 
 #define MAJOR                            1
 #define MINOR                            0
-#define BUILD                            36
+#define BUILD                            54
 #define PATCH                            0
 
 #define VERSION_NUM                      MAJOR, MINOR, BUILD, PATCH
