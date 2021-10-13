@@ -10,11 +10,12 @@
 #include <shlwapi.h>
 
 #include "capturer/picture_capturer_d3d9.h"
+#include "capturer/picture_capturer_dxgi.h"
 
 using namespace Gdiplus;
 
 const int kPathLen = 1024;
-const int kCount = 20;
+const int kCount = 10;
 
 static HWND g_hwnd = NULL;
 static int g_width = 0;
@@ -117,12 +118,10 @@ void GdiCaptureRGB24(const std::wstring& out_dir) {
   int count = 0;
   while (count++ < kCount) {
     BitBlt(mem_dc, 0, 0, g_width, g_height, src_dc, 0, 0, SRCCOPY);
-    GetDIBits(mem_dc, bitmap, 0, g_height, buffer, &bitmap_info,
-              DIB_RGB_COLORS);
+    GetDIBits(mem_dc, bitmap, 0, g_height, buffer, &bitmap_info, DIB_RGB_COLORS);
 
     memset(output, 0, sizeof(wchar_t) * kPathLen);
-    wsprintf(output, L"%lsgdi_rgb24_%ls.bmp", out_dir.c_str(),
-             std::to_wstring(GetCurrentMilliseconds()).c_str());
+    wsprintf(output, L"%lsgdi_rgb24_%d.bmp", out_dir.c_str(), count);
     SaveBMP(PixelFormat24bppRGB, buffer, g_width, g_height, len, output);
 
     std::this_thread::sleep_for(std::chrono::seconds(1));
@@ -156,8 +155,7 @@ void GdiCaptureRGB32(const std::wstring& out_dir) {
     GetDIBits(mem_dc, bitmap, 0, g_height, buffer, &bitmap_info, DIB_RGB_COLORS);
 
     memset(output, 0, sizeof(wchar_t) * kPathLen);
-    wsprintf(output, L"%lsgdi_rgb32_%ls.bmp", out_dir.c_str(),
-             std::to_wstring(GetCurrentMilliseconds()).c_str());
+    wsprintf(output, L"%lsgdi_rgb32_%d.bmp", out_dir.c_str(), count);
     SaveBMP(PixelFormat32bppARGB, buffer, g_width, g_height, len, output);
 
     std::this_thread::sleep_for(std::chrono::seconds(1));
@@ -182,10 +180,8 @@ void D3D9CaptureRGB24(const std::wstring& out_dir) {
     }
     uint8_t* rgb = ARGBToRGB(data->data, data->width, data->height);
 
-    wsprintf(output, L"%lsd3d9_rgb24_%ls.bmp", out_dir.c_str(),
-             std::to_wstring(GetCurrentMilliseconds()).c_str());
-    SaveBMP(PixelFormat24bppRGB, rgb, data->width, data->height,
-            data->width * data->height * 3, output);
+    wsprintf(output, L"%lsd3d9_rgb24_%d.bmp", out_dir.c_str(), count);
+    SaveBMP(PixelFormat24bppRGB, rgb, data->width, data->height, data->width * data->height * 3, output);
 
     delete data;
     delete rgb;
@@ -206,11 +202,54 @@ void D3D9CaptureRGB32(const std::wstring& out_dir) {
       break;
     }
 
-    wsprintf(output, L"%lsd3d9_rgb32_%ls.bmp", out_dir.c_str(),
-             std::to_wstring(GetCurrentMilliseconds()).c_str());
-    SaveBMP(PixelFormat32bppARGB, data->data, data->width, data->height,
-            data->len, output);
+    wsprintf(output, L"%lsd3d9_rgb32_%d.bmp", out_dir.c_str(), count);
+    SaveBMP(PixelFormat32bppARGB, data->data, data->width, data->height, data->len, output);
 
+    delete data;
+    std::this_thread::sleep_for(std::chrono::seconds(1));
+  }
+}
+
+void DXGICaptureRGB24(const std::wstring& out_dir) {
+  std::unique_ptr<PictureCapturer> capturer(new PictureCapturerDXGI());
+
+  wchar_t output[kPathLen];
+  int count = 0;
+
+  while (count++ < kCount) {
+    AVData* data = nullptr;
+    if (!capturer->CaptureScreen(&data)) {
+      printf("抓屏失败\n");
+      break;
+    }
+    uint8_t* rgb = ARGBToRGB(data->data, data->width, data->height);
+
+    wsprintf(output, L"%lsdxgi_rgb24_%d.bmp", out_dir.c_str(), count);
+    SaveBMP(PixelFormat32bppARGB, data->data, data->width, data->height, data->len, output);
+
+    delete data;
+    delete rgb;
+    std::this_thread::sleep_for(std::chrono::seconds(1));
+  }
+}
+
+void DXGICaptureRGB32(const std::wstring& out_dir) {
+  std::unique_ptr<PictureCapturer> capturer(new PictureCapturerDXGI());
+
+  wchar_t output[kPathLen];
+  int count = 0;
+
+  while (count++ < kCount) {
+    AVData* data = nullptr;
+    if (!capturer->CaptureScreen(&data)) {
+      printf("抓屏失败\n");
+      break;
+    }
+
+    wsprintf(output, L"%lsdxgi_rgb32_%d.bmp", out_dir.c_str(), count);
+    SaveBMP(PixelFormat32bppARGB, data->data, data->width, data->height, data->len, output);
+
+    delete data;
     std::this_thread::sleep_for(std::chrono::seconds(1));
   }
 }
@@ -248,15 +287,18 @@ int main(int argc, char** argv) {
   CLSIDFromString(L"{557cf400-1a04-11d3-9a73-0000f81ef32e}", &g_bmp_clsid);
 
   std::wstring out_dir = GenerateOutDir();
-  std::thread capture_gdi_rgb24 = std::thread(GdiCaptureRGB24, out_dir);
-  std::thread capture_gdi_rgb32 = std::thread(GdiCaptureRGB32, out_dir);
-  std::thread capture_d3d9_rgb24 = std::thread(D3D9CaptureRGB24, out_dir);
-  std::thread capture_d3d9_rgb32 = std::thread(D3D9CaptureRGB32, out_dir);
+  std::thread thread1 = std::thread(GdiCaptureRGB24, out_dir);
+  std::thread thread2 = std::thread(GdiCaptureRGB32, out_dir);
+  std::thread thread3 = std::thread(D3D9CaptureRGB24, out_dir);
+  std::thread thread4 = std::thread(D3D9CaptureRGB32, out_dir);
 
-  capture_gdi_rgb24.join();
-  capture_gdi_rgb32.join();
-  capture_d3d9_rgb24.join();
-  capture_d3d9_rgb32.join();
+  thread1.join();
+  thread2.join();
+  thread3.join();
+  thread4.join();
+
+  DXGICaptureRGB24(out_dir);
+  DXGICaptureRGB32(out_dir);
 
   GdiplusShutdown(gdiplus_token);
   return 0;
