@@ -31,9 +31,8 @@ bool PictureCapturerDXGI::CaptureScreen(AVData** av_data) {
   ComPtr<IDXGIResource> dxgi_resource;
   DXGI_OUTDUPL_FRAME_INFO frame_info;
   HRESULT hr = desk_dupl_->AcquireNextFrame(
-      500, &frame_info, dxgi_resource.GetAddressOf());
+      10, &frame_info, dxgi_resource.GetAddressOf());
   if (hr == DXGI_ERROR_WAIT_TIMEOUT) {
-    LOG(INFO) << "屏幕没有发生变化";
     return true;
   }
   if (FAILED(hr)) {
