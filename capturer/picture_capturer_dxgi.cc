@@ -121,7 +121,7 @@ bool PictureCapturerDXGI::InitDXGI() {
     hr = D3D11CreateDevice(nullptr,
                            driver_types[i],
                            nullptr,
-                           D3D11_CREATE_DEVICE_DEBUG,
+                           0,
                            d3d_feature_levels,
                            ARRAYSIZE(d3d_feature_levels),
                            D3D11_SDK_VERSION,
