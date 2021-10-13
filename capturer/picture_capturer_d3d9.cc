@@ -53,6 +53,8 @@ bool PictureCapturerD3D9::CaptureScreen(AVData** av_data) {
   tmp->data = new uint8_t[tmp->len];
   memcpy(tmp->data, lr.pBits, sizeof(uint8_t) * tmp->len);
 
+  *av_data = tmp;
+
   dest_target_->UnlockRect();
   return true;
 }
