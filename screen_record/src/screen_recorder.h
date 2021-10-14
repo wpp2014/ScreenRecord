@@ -47,6 +47,10 @@ class ScreenRecorder : public QThread {
   // 重新开始录屏
   void restartRecord();
 
+  Status status() const {
+    return status_;
+  }
+
  private:
   // 录屏线程
   void run() override;

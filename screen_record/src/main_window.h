@@ -18,12 +18,6 @@ class MainWindow : public QMainWindow {
   Q_OBJECT
 
  public:
-  enum class Status {
-    RECORDDING = 0,
-    PAUSE,
-    STOPPED,
-  };
-
   explicit MainWindow(QWidget* parent = Q_NULLPTR);
   ~MainWindow();
 
@@ -70,9 +64,6 @@ class MainWindow : public QMainWindow {
   QPoint mouse_pressed_pt_;
   // 移动前窗口左上角坐标
   QPoint window_pt_before_move_;
-
-  // 当前状态
-  Status status_;
 
   // 本地存储路径
   QDir local_path_;

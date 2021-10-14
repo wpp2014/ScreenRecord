@@ -17,7 +17,6 @@ const char kName[] = "ScreenRecord";
 MainWindow::MainWindow(QWidget* parent)
     : QMainWindow(parent),
       should_move_window_(false),
-      status_(Status::STOPPED),
       record_time_(0) {
   ui_.setupUi(this);
 
@@ -42,12 +41,31 @@ MainWindow::MainWindow(QWidget* parent)
   ui_.contentFrame->layout()->setSizeConstraint(QLayout::SetFixedSize);
 
   connectSignals();
+
+  screen_recorder_ = std::make_unique<ScreenRecorder>(
+      [this]() { emit recordCompleted(); },
+      [this]() { emit recordCanceled(); },
+      [this]() { emit recordFailed(); }
+  );
 }
 
 MainWindow::~MainWindow() {
 }
 
 void MainWindow::onClose() {
+  // 如果在录屏，先取消
+  if (screen_recorder_->status() == ScreenRecorder::Status::RECORDING ||
+      screen_recorder_->status() == ScreenRecorder::Status::PAUSE) {
+    screen_recorder_->cancelRecord();
+  }
+
+  // 先隐藏窗口，然后等待录屏结束
+  hide();
+  while (screen_recorder_->status() != ScreenRecorder::Status::STOPPED) {
+    std::this_thread::sleep_for(std::chrono::seconds(1));
+  }
+
+  // 关闭
   close();
 }
 
@@ -56,17 +74,21 @@ void MainWindow::onMinimize() {
 }
 
 void MainWindow::onClickStartBtn() {
-  switch (status_) {
-    case MainWindow::Status::RECORDDING:
+  switch (screen_recorder_->status()) {
+    case ScreenRecorder::Status::RECORDING:
       pause();
       break;
 
-    case MainWindow::Status::PAUSE:
+    case ScreenRecorder::Status::PAUSE:
       restart();
       break;
 
-    case MainWindow::Status::STOPPED:
+    case ScreenRecorder::Status::STOPPED:
       start();
+      break;
+
+    case ScreenRecorder::Status::CANCELING:
+    case ScreenRecorder::Status::STOPPING:
       break;
 
     default:
@@ -94,18 +116,15 @@ void MainWindow::onUpdateTime() {
 }
 
 void MainWindow::onRecordCompleted() {
-  status_ = Status::STOPPED;
   ui_.btnStart->setEnabled(true);
 }
 
 void MainWindow::onRecordFailed() {
   LOG(ERROR) << "录屏失败";
-  status_ = Status::STOPPED;
 }
 
 void MainWindow::onRecordCanceled() {
   LOG(INFO) << "取消录屏";
-  status_ = Status::STOPPED;
 }
 
 void MainWindow::mousePressEvent(QMouseEvent* event) {
@@ -131,16 +150,10 @@ void MainWindow::mouseMoveEvent(QMouseEvent* event) {
 }
 
 void MainWindow::start() {
-  DCHECK(status_ == Status::STOPPED);
+  DCHECK(screen_recorder_->status() == ScreenRecorder::Status::STOPPED);
 
   ui_.btnStop->setEnabled(true);
   ui_.btnStart->setText(QStringLiteral("暂停"));
-
-  screen_recorder_ = std::make_unique<ScreenRecorder>(
-      [this]() { emit recordCompleted(); },
-      [this]() { emit recordCanceled(); },
-      [this]() { emit recordFailed(); }
-  );
 
   if (FLAGS_fps < 16 || FLAGS_fps > 60) {
     LOG(WARNING) << "fpt的范围不符合要求（[16, 60]），重置为30.";
@@ -155,32 +168,27 @@ void MainWindow::start() {
 
   DCHECK(!timer_->isActive());
   timer_->start(std::chrono::milliseconds(1000));
-
-  status_ = Status::RECORDDING;
 }
 
 void MainWindow::pause() {
-  DCHECK(status_ == Status::RECORDDING);
+  DCHECK(screen_recorder_->status() == ScreenRecorder::Status::RECORDING);
   screen_recorder_->pauseRecord();
 
   timer_->stop();
   ui_.btnStart->setText(QStringLiteral("继续"));
-
-  status_ = Status::PAUSE;
 }
 
 void MainWindow::restart() {
-  DCHECK(status_ == Status::PAUSE);
+  DCHECK(screen_recorder_->status() == ScreenRecorder::Status::PAUSE);
   screen_recorder_->restartRecord();
 
   timer_->start();
   ui_.btnStart->setText(QStringLiteral("暂停"));
-
-  status_ = Status::RECORDDING;
 }
 
 void MainWindow::stop() { 
-  DCHECK(status_ == Status::RECORDDING || status_ == Status::PAUSE);
+  DCHECK(screen_recorder_->status() == ScreenRecorder::Status::RECORDING ||
+         screen_recorder_->status() == ScreenRecorder::Status::PAUSE);
   screen_recorder_->stopRecord();
 
   timer_->stop();
