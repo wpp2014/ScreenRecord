@@ -1,0 +1,182 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <VCProjectVersion>16.0</VCProjectVersion>
+    <Keyword>Win32Proj</Keyword>
+    <ProjectGuid>{1940b4ec-c6d2-46af-9289-e32995d29617}</ProjectGuid>
+    <RootNamespace>base</RootNamespace>
+    <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v142</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v142</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="Shared">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <LinkIncremental>true</LinkIncremental>
+    <OutDir>$(SolutionDir)out\$(PlatformToolset)_$(Configuration)_$(PlatformShortName)\</OutDir>
+    <IntDir>$(SolutionDir)out\$(PlatformToolset)_$(Configuration)_$(PlatformShortName)\obj\$(ProjectName)\</IntDir>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <LinkIncremental>false</LinkIncremental>
+    <OutDir>$(SolutionDir)out\$(PlatformToolset)_$(Configuration)_$(PlatformShortName)\</OutDir>
+    <IntDir>$(SolutionDir)out\$(PlatformToolset)_$(Configuration)_$(PlatformShortName)\obj\$(ProjectName)\</IntDir>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <WarningLevel>Level4</WarningLevel>
+      <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;NOMINMAX;WIN32_LEAN_AND_MEAN;_CRT_SECURE_NO_DEPRECATE;_CRT_SECURE_NO_WARNINGS;_HAS_EXCEPTIONS=0;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ConformanceMode>true</ConformanceMode>
+      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
+      <AdditionalIncludeDirectories>..;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <DisableSpecificWarnings>4100;4127;4324;4351;4577;4996;%(DisableSpecificWarnings)</DisableSpecificWarnings>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <WarningLevel>Level4</WarningLevel>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;NOMINMAX;WIN32_LEAN_AND_MEAN;_CRT_SECURE_NO_DEPRECATE;_CRT_SECURE_NO_WARNINGS;_HAS_EXCEPTIONS=0;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ConformanceMode>true</ConformanceMode>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+      <AdditionalIncludeDirectories>..;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <DisableSpecificWarnings>4100;4127;4324;4351;4577;4996;%(DisableSpecificWarnings)</DisableSpecificWarnings>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClInclude Include="atomicops.h" />
+    <ClInclude Include="atomicops_internals_atomicword_compat.h" />
+    <ClInclude Include="atomicops_internals_portable.h" />
+    <ClInclude Include="auto_reset.h" />
+    <ClInclude Include="base_paths.h" />
+    <ClInclude Include="base_paths_win.h" />
+    <ClInclude Include="bit_cast.h" />
+    <ClInclude Include="check.h" />
+    <ClInclude Include="check_op.h" />
+    <ClInclude Include="compiler_specific.h" />
+    <ClInclude Include="cxx17_backports.h" />
+    <ClInclude Include="debug\alias.h" />
+    <ClInclude Include="files\file.h" />
+    <ClInclude Include="files\file_path.h" />
+    <ClInclude Include="files\file_util.h" />
+    <ClInclude Include="files\scoped_file.h" />
+    <ClInclude Include="format_macros.h" />
+    <ClInclude Include="logging.h" />
+    <ClInclude Include="macros.h" />
+    <ClInclude Include="memory\free_deleter.h" />
+    <ClInclude Include="memory\page_size.h" />
+    <ClInclude Include="memory\scoped_policy.h" />
+    <ClInclude Include="metrics\histogram_functions.h" />
+    <ClInclude Include="metrics\histogram_macros.h" />
+    <ClInclude Include="metrics\persistent_histogram_allocator.h" />
+    <ClInclude Include="notreached.h" />
+    <ClInclude Include="numerics\checked_math.h" />
+    <ClInclude Include="numerics\checked_math_impl.h" />
+    <ClInclude Include="numerics\clamped_math.h" />
+    <ClInclude Include="numerics\clamped_math_impl.h" />
+    <ClInclude Include="numerics\safe_conversions.h" />
+    <ClInclude Include="numerics\safe_conversions_arm_impl.h" />
+    <ClInclude Include="numerics\safe_conversions_impl.h" />
+    <ClInclude Include="numerics\safe_math.h" />
+    <ClInclude Include="numerics\safe_math_arm_impl.h" />
+    <ClInclude Include="numerics\safe_math_clang_gcc_impl.h" />
+    <ClInclude Include="numerics\safe_math_shared_impl.h" />
+    <ClInclude Include="path_service.h" />
+    <ClInclude Include="process\memory.h" />
+    <ClInclude Include="rand_util.h" />
+    <ClInclude Include="scoped_clear_last_error.h" />
+    <ClInclude Include="scoped_generic.h" />
+    <ClInclude Include="strings\stringprintf.h" />
+    <ClInclude Include="strings\string_number_conversions.h" />
+    <ClInclude Include="strings\string_piece.h" />
+    <ClInclude Include="strings\string_util.h" />
+    <ClInclude Include="strings\string_util_win.h" />
+    <ClInclude Include="strings\sys_string_conversions.h" />
+    <ClInclude Include="strings\utf_string_conversions.h" />
+    <ClInclude Include="strings\utf_string_conversion_utils.h" />
+    <ClInclude Include="synchronization\condition_variable.h" />
+    <ClInclude Include="synchronization\lock.h" />
+    <ClInclude Include="synchronization\lock_impl.h" />
+    <ClInclude Include="sys_byteorder.h" />
+    <ClInclude Include="template_util.h" />
+    <ClInclude Include="third_party\icu\icu_utf.h" />
+    <ClInclude Include="threading\thread_local_storage.h" />
+    <ClInclude Include="thread_annotations.h" />
+    <ClInclude Include="win\current_module.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="base_paths.cc" />
+    <ClCompile Include="base_paths_win.cc" />
+    <ClCompile Include="debug\alias.cc" />
+    <ClCompile Include="files\file_win.cc" />
+    <ClCompile Include="files\file_path.cc" />
+    <ClCompile Include="files\file_util.cc" />
+    <ClCompile Include="files\file_util_win.cc" />
+    <ClCompile Include="files\scoped_file.cc" />
+    <ClCompile Include="logging.cc" />
+    <ClCompile Include="memory\page_size_win.cc" />
+    <ClCompile Include="path_service.cc" />
+    <ClCompile Include="process\memory.cc" />
+    <ClCompile Include="rand_util.cc" />
+    <ClCompile Include="scoped_clear_last_error_win.cc" />
+    <ClCompile Include="strings\stringprintf.cc" />
+    <ClCompile Include="strings\string_number_conversions.cc" />
+    <ClCompile Include="strings\string_util.cc" />
+    <ClCompile Include="strings\string_util_win.cc" />
+    <ClCompile Include="strings\sys_string_conversions_win.cc" />
+    <ClCompile Include="strings\utf_string_conversions.cc" />
+    <ClCompile Include="strings\utf_string_conversion_utils.cc" />
+    <ClCompile Include="synchronization\lock.cc" />
+    <ClCompile Include="synchronization\lock_impl_win.cc" />
+    <ClCompile Include="third_party\icu\icu_utf.cc" />
+    <ClCompile Include="threading\thread_local_storage.cc" />
+    <ClCompile Include="threading\thread_local_storage_win.cc" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

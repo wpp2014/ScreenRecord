@@ -26,11 +26,12 @@ const uint16_t kBitsPerSample = 16;
 const uint16_t kFormatType = WAVE_FORMAT_PCM;
 
 // 构造输出路径
-std::string GenerateOutputPath(const std::string& output_dir) {
+std::string GenerateOutputPath(const std::string& output_dir,
+                               const std::string& file_format) {
   std::string filename = QDateTime::currentDateTime()
-                             .toString("yyyy-MM-dd hh.mm.ss.zzz")
+                             .toString("yyyy-MM-dd-hh-mm-ss-zzz")
                              .toStdString();
-  filename.append(".mp4");
+  filename.append(".").append(file_format);
 
   std::string output_path;
   output_path.append(output_dir).append("/").append(filename);
@@ -123,7 +124,7 @@ void ScreenRecorder::startRecord(const QString& dir, int fps) {
   data_queue_.Clear();
 
   // 开启截屏线程
-  Q_ASSERT(!capture_picture_thread_.joinable());
+  DCHECK(!capture_picture_thread_.joinable());
   capture_picture_thread_ =
       std::thread(&ScreenRecorder::capturePictureThread, this, fps_);
 
@@ -171,8 +172,10 @@ void ScreenRecorder::run() {
   video_config.height = height;
   video_config.fps = fps_;
   video_config.input_pixel_format = AV_PIX_FMT_RGB32;
+  video_config.codec_id = g_setting_manager->VideoCodecID();
 
-  std::string filepath = GenerateOutputPath(output_dir_);
+  std::string file_format = g_setting_manager->FileFormat().toStdString();
+  std::string filepath = GenerateOutputPath(output_dir_, file_format);
   std::unique_ptr<AVMuxer> av_muxer =
       std::make_unique<AVMuxer>(audio_config, video_config, filepath, true);
   if (!av_muxer->Initialize()) {
@@ -212,6 +215,8 @@ void ScreenRecorder::run() {
     on_recording_completed_();
   }
   status_ = Status::STOPPED;
+
+  capture_picture_thread_.join();
 
   LOG(INFO) << "结束录屏";
 }
@@ -302,6 +307,9 @@ void ScreenRecorder::capturePictureThread(int fps) {
     }
   }
 
+  char info[1024];
+  memset(info, 0, 1024);
+
   if (capture_result) {
     auto t2 = std::chrono::high_resolution_clock::now();
     double diff =
@@ -310,13 +318,10 @@ void ScreenRecorder::capturePictureThread(int fps) {
     // 结束录音
     voice_capturer_->Stop();
 
-    char info[1024];
-    memset(info, 0, 1024);
     sprintf(info, "截屏操作结束，耗时%.3f秒，截取%u帧，帧率: %.3f", diff, count,
             count / diff);
-    LOG(INFO) << info;
   } else {
-    LOG(ERROR) << "抓屏失败";
+    sprintf(info, "%s", "抓屏失败");
 
     // 结束录音
     voice_capturer_->Stop();
@@ -328,4 +333,6 @@ void ScreenRecorder::capturePictureThread(int fps) {
 
   // 队列发送通知，解决暂停录屏之后直接点击停止按钮，导致编码线程阻塞的问题
   data_queue_.Notify();
+
+  LOG(INFO) << info;
 }

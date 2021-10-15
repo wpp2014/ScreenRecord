@@ -6,5 +6,9 @@
     <file alias="window_min_h">imgs/window_min_h.png</file>
     <file alias="window_min_n">imgs/window_min_n.png</file>
     <file alias="window_min_p">imgs/window_min_p.png</file>
+    <file alias="settings_d">imgs/settings_d.png</file>
+    <file alias="settings_h">imgs/settings_h.png</file>
+    <file alias="settings_n">imgs/settings_n.png</file>
+    <file alias="settings_p">imgs/settings_p.png</file>
   </qresource>
 </RCC>

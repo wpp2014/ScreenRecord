@@ -20,6 +20,9 @@
     <Filter Include="Source Files\util">
       <UniqueIdentifier>{d0c4a9f0-1956-433f-9415-4fd8a3b525d7}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\setting">
+      <UniqueIdentifier>{215bbfac-60b8-4f93-89f8-d3ffaa72463a}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\main.cc">
@@ -34,15 +37,24 @@
     <ClCompile Include="src\util\time_helper.cc">
       <Filter>Source Files\util</Filter>
     </ClCompile>
-    <ClCompile Include="src\util\string.cc">
-      <Filter>Source Files\util</Filter>
-    </ClCompile>
     <ClCompile Include="src\argument.cc">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\setting\setting_dialog.cc">
+      <Filter>Source Files\setting</Filter>
+    </ClCompile>
+    <ClCompile Include="src\setting\setting_manager.cc">
+      <Filter>Source Files\setting</Filter>
+    </ClCompile>
+    <ClCompile Include="src\constants.cc">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <QtUic Include="ui\main_window.ui">
+      <Filter>Form Files</Filter>
+    </QtUic>
+    <QtUic Include="ui\setting_dialog.ui">
       <Filter>Form Files</Filter>
     </QtUic>
   </ItemGroup>
@@ -69,10 +81,16 @@
     <ClInclude Include="res\version.h">
       <Filter>Resource Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\util\string.h">
-      <Filter>Source Files\util</Filter>
-    </ClInclude>
     <ClInclude Include="src\argument.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\setting\setting_dialog.h">
+      <Filter>Source Files\setting</Filter>
+    </ClInclude>
+    <ClInclude Include="src\setting\setting_manager.h">
+      <Filter>Source Files\setting</Filter>
+    </ClInclude>
+    <ClInclude Include="src\constants.h">
       <Filter>Source Files</Filter>
     </ClInclude>
   </ItemGroup>

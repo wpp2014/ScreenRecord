@@ -1,0 +1,301 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>SettingDialogUI</class>
+ <widget class="QDialog" name="SettingDialogUI">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>400</width>
+    <height>180</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>设置</string>
+  </property>
+  <layout class="QVBoxLayout" name="verticalLayout">
+   <property name="spacing">
+    <number>0</number>
+   </property>
+   <property name="leftMargin">
+    <number>0</number>
+   </property>
+   <property name="topMargin">
+    <number>0</number>
+   </property>
+   <property name="rightMargin">
+    <number>0</number>
+   </property>
+   <property name="bottomMargin">
+    <number>0</number>
+   </property>
+   <item>
+    <widget class="QFrame" name="titleBar">
+     <property name="minimumSize">
+      <size>
+       <width>0</width>
+       <height>30</height>
+      </size>
+     </property>
+     <property name="maximumSize">
+      <size>
+       <width>16777215</width>
+       <height>30</height>
+      </size>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">border: none;
+background-color: #6a74ff;</string>
+     </property>
+     <property name="frameShape">
+      <enum>QFrame::StyledPanel</enum>
+     </property>
+     <property name="frameShadow">
+      <enum>QFrame::Raised</enum>
+     </property>
+     <layout class="QHBoxLayout" name="horizontalLayout">
+      <property name="spacing">
+       <number>0</number>
+      </property>
+      <property name="leftMargin">
+       <number>12</number>
+      </property>
+      <property name="topMargin">
+       <number>0</number>
+      </property>
+      <property name="rightMargin">
+       <number>0</number>
+      </property>
+      <property name="bottomMargin">
+       <number>0</number>
+      </property>
+      <item>
+       <widget class="QLabel" name="title">
+        <property name="minimumSize">
+         <size>
+          <width>0</width>
+          <height>0</height>
+         </size>
+        </property>
+        <property name="text">
+         <string>设置</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <spacer name="horizontalSpacer">
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
+        </property>
+        <property name="sizeHint" stdset="0">
+         <size>
+          <width>315</width>
+          <height>20</height>
+         </size>
+        </property>
+       </spacer>
+      </item>
+      <item>
+       <widget class="QPushButton" name="btnClose">
+        <property name="minimumSize">
+         <size>
+          <width>40</width>
+          <height>30</height>
+         </size>
+        </property>
+        <property name="maximumSize">
+         <size>
+          <width>40</width>
+          <height>30</height>
+         </size>
+        </property>
+        <property name="styleSheet">
+         <string notr="true">QPushButton {
+  background-image: url(:/MainWindow/window_close_n);
+  border: none;
+}
+QPushButton:hover:!pressed {
+  background-image: url(:/MainWindow/window_close_h);
+  border: none;
+}
+QPushButton:pressed {
+  background-image: url(:/MainWindow/window_close_p);
+  border: none;
+}</string>
+        </property>
+        <property name="text">
+         <string/>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item>
+    <widget class="QFrame" name="contentWindow">
+     <property name="frameShape">
+      <enum>QFrame::StyledPanel</enum>
+     </property>
+     <property name="frameShadow">
+      <enum>QFrame::Raised</enum>
+     </property>
+     <layout class="QVBoxLayout" name="verticalLayout_2">
+      <property name="spacing">
+       <number>0</number>
+      </property>
+      <property name="topMargin">
+       <number>5</number>
+      </property>
+      <property name="bottomMargin">
+       <number>5</number>
+      </property>
+      <item>
+       <widget class="QGroupBox" name="groupBox">
+        <property name="minimumSize">
+         <size>
+          <width>0</width>
+          <height>60</height>
+         </size>
+        </property>
+        <property name="maximumSize">
+         <size>
+          <width>16777215</width>
+          <height>60</height>
+         </size>
+        </property>
+        <property name="title">
+         <string>抓屏设置</string>
+        </property>
+        <widget class="QLabel" name="capturerLabel">
+         <property name="geometry">
+          <rect>
+           <x>11</x>
+           <y>24</y>
+           <width>70</width>
+           <height>25</height>
+          </rect>
+         </property>
+         <property name="text">
+          <string>抓屏方式:</string>
+         </property>
+        </widget>
+        <widget class="QComboBox" name="capturerSelector">
+         <property name="geometry">
+          <rect>
+           <x>85</x>
+           <y>24</y>
+           <width>70</width>
+           <height>25</height>
+          </rect>
+         </property>
+         <property name="minimumSize">
+          <size>
+           <width>70</width>
+           <height>0</height>
+          </size>
+         </property>
+         <property name="maximumSize">
+          <size>
+           <width>70</width>
+           <height>16777215</height>
+          </size>
+         </property>
+        </widget>
+        <widget class="QLabel" name="fpsLabel">
+         <property name="geometry">
+          <rect>
+           <x>213</x>
+           <y>24</y>
+           <width>78</width>
+           <height>25</height>
+          </rect>
+         </property>
+         <property name="text">
+          <string>帧率(FPS):</string>
+         </property>
+        </widget>
+        <widget class="QComboBox" name="fpsSelector">
+         <property name="geometry">
+          <rect>
+           <x>294</x>
+           <y>24</y>
+           <width>70</width>
+           <height>24</height>
+          </rect>
+         </property>
+         <property name="minimumSize">
+          <size>
+           <width>70</width>
+           <height>0</height>
+          </size>
+         </property>
+         <property name="maximumSize">
+          <size>
+           <width>70</width>
+           <height>16777215</height>
+          </size>
+         </property>
+        </widget>
+       </widget>
+      </item>
+      <item>
+       <widget class="QGroupBox" name="groupBox_2">
+        <property name="title">
+         <string>输出设置</string>
+        </property>
+        <widget class="QLabel" name="fileFormatLabel">
+         <property name="geometry">
+          <rect>
+           <x>11</x>
+           <y>20</y>
+           <width>70</width>
+           <height>25</height>
+          </rect>
+         </property>
+         <property name="text">
+          <string>文件格式:</string>
+         </property>
+        </widget>
+        <widget class="QComboBox" name="fileFormatSelector">
+         <property name="geometry">
+          <rect>
+           <x>85</x>
+           <y>20</y>
+           <width>70</width>
+           <height>25</height>
+          </rect>
+         </property>
+        </widget>
+        <widget class="QLabel" name="videoCodecLabel">
+         <property name="geometry">
+          <rect>
+           <x>11</x>
+           <y>48</y>
+           <width>70</width>
+           <height>25</height>
+          </rect>
+         </property>
+         <property name="text">
+          <string>视频编码:</string>
+         </property>
+        </widget>
+        <widget class="QComboBox" name="videoCodecSelector">
+         <property name="geometry">
+          <rect>
+           <x>85</x>
+           <y>48</y>
+           <width>120</width>
+           <height>25</height>
+          </rect>
+         </property>
+        </widget>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
+  </layout>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>

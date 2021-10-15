@@ -67,11 +67,11 @@
       <AdditionalIncludeDirectories>.;..;$(IntDir)..;$(VcpkgPath)\x86-windows-static\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <WarningLevel>Level4</WarningLevel>
       <DisableSpecificWarnings>4100;%(DisableSpecificWarnings)</DisableSpecificWarnings>
-      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;_CRT_SECURE_NO_DEPRECATE;_CRT_NONSTDC_NO_DEPRECATE;GLOG_NO_ABBREVIATED_SEVERITIES;GOOGLE_GLOG_DLL_DECL=;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;_CRT_SECURE_NO_DEPRECATE;_CRT_NONSTDC_NO_DEPRECATE;GLOG_NO_ABBREVIATED_SEVERITIES;GOOGLE_GLOG_DLL_DECL=;NOMINMAX;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
       <AdditionalLibraryDirectories>$(VcpkgPath)\x86-windows-static\debug\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>$(OutDir)capturer.lib;$(OutDir)encoder.lib;avcodec.lib;avformat.lib;avutil.lib;bcrypt.lib;d3d9.lib;gflags_static_debug.lib;glog.lib;libx264.lib;mfplat.lib;mfuuid.lib;secur32.lib;strmiids.lib;swresample.lib;swscale.lib;vpx.lib;winmm.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>$(OutDir)base.lib;$(OutDir)capturer.lib;$(OutDir)encoder.lib;avcodec.lib;avformat.lib;avutil.lib;bcrypt.lib;d3d9.lib;gflags_static_debug.lib;glog.lib;libx264.lib;mfplat.lib;mfuuid.lib;secur32.lib;strmiids.lib;swresample.lib;swscale.lib;vpx.lib;winmm.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -79,11 +79,11 @@
       <AdditionalIncludeDirectories>.;..;$(IntDir)..;$(VcpkgPath)\x86-windows-static\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <WarningLevel>Level4</WarningLevel>
       <DisableSpecificWarnings>4100;%(DisableSpecificWarnings)</DisableSpecificWarnings>
-      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;_CRT_SECURE_NO_DEPRECATE;_CRT_NONSTDC_NO_DEPRECATE;GLOG_NO_ABBREVIATED_SEVERITIES;GOOGLE_GLOG_DLL_DECL=;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;_CRT_SECURE_NO_DEPRECATE;_CRT_NONSTDC_NO_DEPRECATE;GLOG_NO_ABBREVIATED_SEVERITIES;GOOGLE_GLOG_DLL_DECL=;NOMINMAX;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
       <AdditionalLibraryDirectories>$(VcpkgPath)\x86-windows-static\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>$(OutDir)capturer.lib;$(OutDir)encoder.lib;avcodec.lib;avformat.lib;avutil.lib;bcrypt.lib;d3d9.lib;gflags_static.lib;glog.lib;libx264.lib;mfplat.lib;mfuuid.lib;secur32.lib;strmiids.lib;swresample.lib;swscale.lib;vpx.lib;winmm.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>$(OutDir)base.lib;$(OutDir)capturer.lib;$(OutDir)encoder.lib;avcodec.lib;avformat.lib;avutil.lib;bcrypt.lib;d3d9.lib;gflags_static.lib;glog.lib;libx264.lib;mfplat.lib;mfuuid.lib;secur32.lib;strmiids.lib;swresample.lib;swscale.lib;vpx.lib;winmm.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|Win32'" Label="Configuration">
@@ -114,10 +114,12 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="src\argument.cc" />
+    <ClCompile Include="src\constants.cc" />
     <ClCompile Include="src\main.cc" />
     <ClCompile Include="src\main_window.cc" />
     <ClCompile Include="src\screen_recorder.cc" />
-    <ClCompile Include="src\util\string.cc" />
+    <ClCompile Include="src\setting\setting_dialog.cc" />
+    <ClCompile Include="src\setting\setting_manager.cc" />
     <ClCompile Include="src\util\time_helper.cc" />
   </ItemGroup>
   <ItemGroup>
@@ -125,6 +127,7 @@
   </ItemGroup>
   <ItemGroup>
     <QtUic Include="ui\main_window.ui" />
+    <QtUic Include="ui\setting_dialog.ui" />
   </ItemGroup>
   <ItemGroup>
     <QtRcc Include="res\screen_record.qrc" />
@@ -132,9 +135,11 @@
   <ItemGroup>
     <ClInclude Include="res\version.h" />
     <ClInclude Include="src\argument.h" />
+    <ClInclude Include="src\constants.h" />
     <ClInclude Include="src\data_queue.h" />
     <ClInclude Include="src\screen_recorder.h" />
-    <ClInclude Include="src\util\string.h" />
+    <ClInclude Include="src\setting\setting_dialog.h" />
+    <ClInclude Include="src\setting\setting_manager.h" />
     <ClInclude Include="src\util\time_helper.h" />
   </ItemGroup>
   <ItemGroup>

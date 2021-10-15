@@ -19,9 +19,9 @@ char* av_err2str(int errnum) {
 
 }  // namespace
 
-AVMuxer::AVMuxer(const AudioConfig & audio_config,
-                 const VideoConfig & video_config,
-                 const std::string & output_path,
+AVMuxer::AVMuxer(const AudioConfig& audio_config,
+                 const VideoConfig& video_config,
+                 const std::string& output_path,
                  bool can_capture_voice)
     : initialized_(false),
       can_capture_voice_(can_capture_voice),
@@ -70,7 +70,7 @@ bool AVMuxer::Initialize() {
     return true;
   }
 
-  output_format_ = av_guess_format("mp4", NULL, NULL);
+  output_format_ = av_guess_format(NULL, output_path_.c_str(), NULL);
   if (!output_format_) {
     DCHECK(false);
     return false;
@@ -178,81 +178,6 @@ bool AVMuxer::EncodeAudioFrame(uint8_t* data, int len) {
     remaining_len -= copy_len;
     last_index_ = 0;
   }
-
-#if 0
-  while (remaining_len > 0) {
-    if (last_index_ > 0) {
-      Q_ASSERT(last_index_ < size_per_audio_frame_);
-
-      copy_len = size_per_audio_frame_ - last_index_;
-      if (remaining_len < copy_len) {
-        copy_len = remaining_len;
-      }
-    } else {
-
-    }
-
-    if (remaining_len < size_per_audio_frame_) {
-      memset(buffer_audio_frame_, 0, size_per_audio_frame_);
-      memcpy(buffer_audio_frame_, data + index, remaining_len);
-      last_index_ = remaining_len;
-      return true;
-    }
-
-    ret = audio_encoder_->PushEncodeFrame(data + index, size_per_audio_frame_,
-                                          0, 0, 0, 0, &encoded_frame);
-    if (ret < 0) {
-      return false;
-    }
-
-    encoded_frame->pts = av_rescale_q(
-        audio_samples_, {1, codec_ctx->sample_rate}, codec_ctx->time_base);
-    audio_samples_ += ret;
-
-    Q_ASSERT(encoded_frame);
-    res = WriteFrame(format_context_, codec_ctx, audio_stream_, encoded_frame);
-    if (!res) {
-      return false;
-    }
-
-    index += size_per_audio_frame_;
-    remaining_len -= size_per_audio_frame_;
-  }
-#endif
-
-#if 0
-  const int buffer_size = audio_encoder_->src_buf_size();
-  int index = 0;
-  int copy_len = 0;
-  int remaining_len = len;
-
-  bool res = false;
-  int ret = 0;
-  AVFrame* encoded_frame = nullptr;
-  while (remaining_len > 0) {
-    Q_ASSERT(index < len);
-
-    copy_len = remaining_len < buffer_size ? remaining_len : buffer_size;
-    ret = audio_encoder_->PushEncodeFrame(data + index, copy_len, 0, 0, 0, 0,
-                                          &encoded_frame);
-    if (ret < 0) {
-      return false;
-    }
-
-    encoded_frame->pts = av_rescale_q(
-        audio_samples_, {1, codec_ctx->sample_rate}, codec_ctx->time_base);
-    audio_samples_ += ret;
-
-    Q_ASSERT(encoded_frame);
-    res = WriteFrame(format_context_, codec_ctx, audio_stream_, encoded_frame);
-    if (!res) {
-      return false;
-    }
-
-    index += copy_len;
-    remaining_len -= copy_len;
-  }
-#endif
 
   return true;
 }

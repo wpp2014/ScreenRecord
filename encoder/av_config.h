@@ -11,6 +11,7 @@ struct VideoConfig {
   int height;
 
   AVPixelFormat input_pixel_format;
+  AVCodecID codec_id;
 };  // struct VideoConfig
 
 struct AudioConfig {

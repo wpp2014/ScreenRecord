@@ -1,0 +1,244 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClInclude Include="atomicops.h" />
+    <ClInclude Include="atomicops_internals_atomicword_compat.h" />
+    <ClInclude Include="atomicops_internals_portable.h" />
+    <ClInclude Include="auto_reset.h" />
+    <ClInclude Include="bit_cast.h" />
+    <ClInclude Include="check.h" />
+    <ClInclude Include="check_op.h" />
+    <ClInclude Include="compiler_specific.h" />
+    <ClInclude Include="cxx17_backports.h" />
+    <ClInclude Include="format_macros.h" />
+    <ClInclude Include="logging.h" />
+    <ClInclude Include="macros.h" />
+    <ClInclude Include="notreached.h" />
+    <ClInclude Include="rand_util.h" />
+    <ClInclude Include="scoped_clear_last_error.h" />
+    <ClInclude Include="scoped_generic.h" />
+    <ClInclude Include="sys_byteorder.h" />
+    <ClInclude Include="template_util.h" />
+    <ClInclude Include="debug\alias.h">
+      <Filter>debug</Filter>
+    </ClInclude>
+    <ClInclude Include="files\file_path.h">
+      <Filter>files</Filter>
+    </ClInclude>
+    <ClInclude Include="files\file_util.h">
+      <Filter>files</Filter>
+    </ClInclude>
+    <ClInclude Include="files\scoped_file.h">
+      <Filter>files</Filter>
+    </ClInclude>
+    <ClInclude Include="memory\free_deleter.h">
+      <Filter>memory</Filter>
+    </ClInclude>
+    <ClInclude Include="memory\page_size.h">
+      <Filter>memory</Filter>
+    </ClInclude>
+    <ClInclude Include="memory\scoped_policy.h">
+      <Filter>memory</Filter>
+    </ClInclude>
+    <ClInclude Include="metrics\histogram_functions.h">
+      <Filter>metrics</Filter>
+    </ClInclude>
+    <ClInclude Include="metrics\histogram_macros.h">
+      <Filter>metrics</Filter>
+    </ClInclude>
+    <ClInclude Include="metrics\persistent_histogram_allocator.h">
+      <Filter>metrics</Filter>
+    </ClInclude>
+    <ClInclude Include="numerics\checked_math.h">
+      <Filter>numerics</Filter>
+    </ClInclude>
+    <ClInclude Include="numerics\checked_math_impl.h">
+      <Filter>numerics</Filter>
+    </ClInclude>
+    <ClInclude Include="numerics\clamped_math.h">
+      <Filter>numerics</Filter>
+    </ClInclude>
+    <ClInclude Include="numerics\clamped_math_impl.h">
+      <Filter>numerics</Filter>
+    </ClInclude>
+    <ClInclude Include="numerics\safe_conversions.h">
+      <Filter>numerics</Filter>
+    </ClInclude>
+    <ClInclude Include="numerics\safe_conversions_arm_impl.h">
+      <Filter>numerics</Filter>
+    </ClInclude>
+    <ClInclude Include="numerics\safe_conversions_impl.h">
+      <Filter>numerics</Filter>
+    </ClInclude>
+    <ClInclude Include="numerics\safe_math.h">
+      <Filter>numerics</Filter>
+    </ClInclude>
+    <ClInclude Include="numerics\safe_math_arm_impl.h">
+      <Filter>numerics</Filter>
+    </ClInclude>
+    <ClInclude Include="numerics\safe_math_clang_gcc_impl.h">
+      <Filter>numerics</Filter>
+    </ClInclude>
+    <ClInclude Include="numerics\safe_math_shared_impl.h">
+      <Filter>numerics</Filter>
+    </ClInclude>
+    <ClInclude Include="process\memory.h">
+      <Filter>process</Filter>
+    </ClInclude>
+    <ClInclude Include="strings\string_number_conversions.h">
+      <Filter>strings</Filter>
+    </ClInclude>
+    <ClInclude Include="strings\string_piece.h">
+      <Filter>strings</Filter>
+    </ClInclude>
+    <ClInclude Include="strings\string_util.h">
+      <Filter>strings</Filter>
+    </ClInclude>
+    <ClInclude Include="strings\string_util_win.h">
+      <Filter>strings</Filter>
+    </ClInclude>
+    <ClInclude Include="strings\stringprintf.h">
+      <Filter>strings</Filter>
+    </ClInclude>
+    <ClInclude Include="strings\sys_string_conversions.h">
+      <Filter>strings</Filter>
+    </ClInclude>
+    <ClInclude Include="strings\utf_string_conversion_utils.h">
+      <Filter>strings</Filter>
+    </ClInclude>
+    <ClInclude Include="strings\utf_string_conversions.h">
+      <Filter>strings</Filter>
+    </ClInclude>
+    <ClInclude Include="synchronization\condition_variable.h">
+      <Filter>synchronization</Filter>
+    </ClInclude>
+    <ClInclude Include="synchronization\lock.h">
+      <Filter>synchronization</Filter>
+    </ClInclude>
+    <ClInclude Include="synchronization\lock_impl.h">
+      <Filter>synchronization</Filter>
+    </ClInclude>
+    <ClInclude Include="third_party\icu\icu_utf.h">
+      <Filter>third_party\icu</Filter>
+    </ClInclude>
+    <ClInclude Include="threading\thread_local_storage.h">
+      <Filter>threading</Filter>
+    </ClInclude>
+    <ClInclude Include="files\file.h">
+      <Filter>files</Filter>
+    </ClInclude>
+    <ClInclude Include="base_paths.h" />
+    <ClInclude Include="base_paths_win.h" />
+    <ClInclude Include="win\current_module.h">
+      <Filter>win</Filter>
+    </ClInclude>
+    <ClInclude Include="path_service.h" />
+    <ClInclude Include="thread_annotations.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="logging.cc" />
+    <ClCompile Include="rand_util.cc" />
+    <ClCompile Include="scoped_clear_last_error_win.cc" />
+    <ClCompile Include="debug\alias.cc">
+      <Filter>debug</Filter>
+    </ClCompile>
+    <ClCompile Include="files\file_path.cc">
+      <Filter>files</Filter>
+    </ClCompile>
+    <ClCompile Include="files\scoped_file.cc">
+      <Filter>files</Filter>
+    </ClCompile>
+    <ClCompile Include="memory\page_size_win.cc">
+      <Filter>memory</Filter>
+    </ClCompile>
+    <ClCompile Include="process\memory.cc">
+      <Filter>process</Filter>
+    </ClCompile>
+    <ClCompile Include="strings\string_number_conversions.cc">
+      <Filter>strings</Filter>
+    </ClCompile>
+    <ClCompile Include="strings\string_util.cc">
+      <Filter>strings</Filter>
+    </ClCompile>
+    <ClCompile Include="strings\string_util_win.cc">
+      <Filter>strings</Filter>
+    </ClCompile>
+    <ClCompile Include="strings\stringprintf.cc">
+      <Filter>strings</Filter>
+    </ClCompile>
+    <ClCompile Include="strings\utf_string_conversion_utils.cc">
+      <Filter>strings</Filter>
+    </ClCompile>
+    <ClCompile Include="strings\utf_string_conversions.cc">
+      <Filter>strings</Filter>
+    </ClCompile>
+    <ClCompile Include="synchronization\lock.cc">
+      <Filter>synchronization</Filter>
+    </ClCompile>
+    <ClCompile Include="synchronization\lock_impl_win.cc">
+      <Filter>synchronization</Filter>
+    </ClCompile>
+    <ClCompile Include="third_party\icu\icu_utf.cc">
+      <Filter>third_party\icu</Filter>
+    </ClCompile>
+    <ClCompile Include="threading\thread_local_storage.cc">
+      <Filter>threading</Filter>
+    </ClCompile>
+    <ClCompile Include="threading\thread_local_storage_win.cc">
+      <Filter>threading</Filter>
+    </ClCompile>
+    <ClCompile Include="files\file_util.cc">
+      <Filter>files</Filter>
+    </ClCompile>
+    <ClCompile Include="files\file_util_win.cc">
+      <Filter>files</Filter>
+    </ClCompile>
+    <ClCompile Include="files\file_win.cc">
+      <Filter>files</Filter>
+    </ClCompile>
+    <ClCompile Include="base_paths.cc" />
+    <ClCompile Include="base_paths_win.cc" />
+    <ClCompile Include="path_service.cc" />
+    <ClCompile Include="strings\sys_string_conversions_win.cc">
+      <Filter>strings</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="debug">
+      <UniqueIdentifier>{c2aa8a04-06ab-4215-ba4a-97b02a74012f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="files">
+      <UniqueIdentifier>{757e4acd-1e4b-4cc3-8b4d-f5bfd37c455f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="memory">
+      <UniqueIdentifier>{43bf9291-bf17-41dd-9cd4-de87e3ca5d97}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="metrics">
+      <UniqueIdentifier>{9a417403-5c9b-4c9a-944b-e81a21d12d6e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="numerics">
+      <UniqueIdentifier>{198093de-ac1a-432a-9519-4e3cfdc3361d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="process">
+      <UniqueIdentifier>{db1e0404-0ef9-4983-a1db-c3a661abc98d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="strings">
+      <UniqueIdentifier>{dc191aee-fb37-4042-8e2b-93bf0e55fd5e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="synchronization">
+      <UniqueIdentifier>{3c931fe5-ae82-40a2-827c-aa5e3932a0da}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="third_party">
+      <UniqueIdentifier>{41192003-500d-4843-ba4b-fdb3526c7c17}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="third_party\icu">
+      <UniqueIdentifier>{27d87d7c-1243-4990-935b-dce827557998}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="threading">
+      <UniqueIdentifier>{6e2f56c2-4141-45ff-9271-0de6d49e3350}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="win">
+      <UniqueIdentifier>{035f5640-63cb-45a9-86c7-ac5111ab59c6}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>

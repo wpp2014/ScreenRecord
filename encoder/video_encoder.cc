@@ -72,10 +72,10 @@ VideoEncoder::~VideoEncoder() {
 bool VideoEncoder::Initialize() {
   DCHECK(!initialized_);
 
-  const AVCodecID codec_id = AV_CODEC_ID_H264;
+  const AVCodecID codec_id = video_config_.codec_id;
   codec_ = avcodec_find_encoder(codec_id);
   if (!codec_) {
-    DCHECK(false) << "Unable to find video encoder: AV_CODEC_ID_MPEG4";
+    DCHECK(false) << "Unable to find video encoder";
     return false;
   }
 

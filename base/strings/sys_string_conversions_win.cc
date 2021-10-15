@@ -1,8 +1,8 @@
-﻿#include "screen_record/src/util/string.h"
-
-#include <stdint.h>
+﻿#include "base/strings/sys_string_conversions.h"
 
 #include <windows.h>
+
+namespace base {
 
 std::wstring SysMultiByteToWide(const std::string& mb, uint32_t code_page) {
   if (mb.empty())
@@ -40,3 +40,5 @@ std::string SysWideToMultiByte(const std::wstring& wide, uint32_t code_page) {
 
   return mb;
 }
+
+}  // namespace base

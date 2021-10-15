@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>300</width>
-    <height>250</height>
+    <height>251</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -76,13 +76,13 @@
       <property name="minimumSize">
        <size>
         <width>0</width>
-        <height>30</height>
+        <height>31</height>
        </size>
       </property>
       <property name="maximumSize">
        <size>
         <width>16777215</width>
-        <height>30</height>
+        <height>31</height>
        </size>
       </property>
       <property name="styleSheet">
@@ -95,7 +95,7 @@ background-color: #6a74ff;</string>
       <property name="frameShadow">
        <enum>QFrame::Raised</enum>
       </property>
-      <layout class="QHBoxLayout" name="horizontalLayout" stretch="0,0,0,0">
+      <layout class="QHBoxLayout" name="horizontalLayout" stretch="0,0,0,0,0">
        <property name="spacing">
         <number>0</number>
        </property>
@@ -109,7 +109,7 @@ background-color: #6a74ff;</string>
         <number>0</number>
        </property>
        <property name="bottomMargin">
-        <number>0</number>
+        <number>1</number>
        </property>
        <item>
         <widget class="QLabel" name="titleLabel">
@@ -151,6 +151,43 @@ background-color: #6a74ff;</string>
           </size>
          </property>
         </spacer>
+       </item>
+       <item>
+        <widget class="QPushButton" name="settingButton">
+         <property name="minimumSize">
+          <size>
+           <width>40</width>
+           <height>30</height>
+          </size>
+         </property>
+         <property name="maximumSize">
+          <size>
+           <width>40</width>
+           <height>30</height>
+          </size>
+         </property>
+         <property name="styleSheet">
+          <string notr="true">QPushButton {
+  background-image: url(:/MainWindow/settings_n);
+  border: none;
+}
+QPushButton:hover:!pressed {
+  background-image: url(:/MainWindow/settings_h);
+  border: none;
+}
+QPushButton:pressed {
+  background-image: url(:/MainWindow/settings_p);
+  border: none;
+}
+QPushButton:disabled {
+  background-image: url(:/MainWindow/settings_d);
+  border: none;
+}</string>
+         </property>
+         <property name="text">
+          <string/>
+         </property>
+        </widget>
        </item>
        <item>
         <widget class="QPushButton" name="minButton">

@@ -6,11 +6,12 @@
 #include <QtGui/QMouseEvent>
 #include <QtWidgets/QMessageBox>
 
+#include "base/strings/sys_string_conversions.h"
 #include "glog/logging.h"
 #include "res/version.h"
 #include "screen_record/src/argument.h"
 #include "screen_record/src/screen_recorder.h"
-#include "screen_record/src/util/string.h"
+#include "screen_record/src/setting/setting_dialog.h"
 
 const char kName[] = "ScreenRecord";
 
@@ -21,8 +22,8 @@ MainWindow::MainWindow(QWidget* parent)
   ui_.setupUi(this);
 
   // 设置title
-  std::wstring name = SysMultiByteToWide(PRODUCT_NAME, CP_ACP);
-  std::wstring version = SysMultiByteToWide(VERSION_STR, CP_ACP);
+  std::wstring name = base::SysMultiByteToWide(PRODUCT_NAME, CP_ACP);
+  std::wstring version = base::SysMultiByteToWide(VERSION_STR, CP_ACP);
   QString title = QString::asprintf("%ls%ls", name.c_str(), version.c_str());
   ui_.titleLabel->setText(title);
 
@@ -71,6 +72,11 @@ void MainWindow::onClose() {
 
 void MainWindow::onMinimize() {
   showMinimized();
+}
+
+void MainWindow::onClickSettingButton() {
+  SettingDialog setting_dialog(this);
+  setting_dialog.exec();
 }
 
 void MainWindow::onClickStartBtn() {
@@ -155,11 +161,13 @@ void MainWindow::start() {
   ui_.btnStop->setEnabled(true);
   ui_.btnStart->setText(QStringLiteral("暂停"));
 
-  if (FLAGS_fps < 16 || FLAGS_fps > 60) {
-    LOG(WARNING) << "fpt的范围不符合要求（[16, 60]），重置为30.";
-    FLAGS_fps = 30;
-  }
-  screen_recorder_->startRecord(local_path_.absolutePath(), FLAGS_fps);
+  LOG(INFO) << "帧率: " << g_setting_manager->fps();
+  LOG(INFO) << "截屏方式: " << g_setting_manager->CaptureType().toStdString();
+  LOG(INFO) << "文件格式: " << g_setting_manager->FileFormat().toStdString();
+  LOG(INFO) << "视频编码格式: " << g_setting_manager->VideoEncoder().toStdString();
+
+  screen_recorder_->startRecord(
+      local_path_.absolutePath(), g_setting_manager->fps());
 
   record_time_ = 0;
 
@@ -168,6 +176,8 @@ void MainWindow::start() {
 
   DCHECK(!timer_->isActive());
   timer_->start(std::chrono::milliseconds(1000));
+
+  ui_.settingButton->setEnabled(false);
 }
 
 void MainWindow::pause() {
@@ -197,6 +207,8 @@ void MainWindow::stop() {
   ui_.btnStart->setText(QStringLiteral("开始"));
   ui_.btnStart->setEnabled(false);
   ui_.btnStop->setEnabled(false);
+
+  ui_.settingButton->setEnabled(true);
 }
 
 void MainWindow::initLocalPath() {
@@ -249,6 +261,10 @@ void MainWindow::connectSignals() {
   // 最小化/关闭
   connect(ui_.minButton, &QPushButton::clicked, this, &MainWindow::onMinimize);
   connect(ui_.closeButton, &QPushButton::clicked, this, &MainWindow::onClose);
+
+  // 打开设置对话框
+  connect(ui_.settingButton, &QPushButton::clicked,
+          this, &MainWindow::onClickSettingButton);
 
   // 开始、暂停、停止、打开保存目录
   connect(ui_.btnStart, &QPushButton::clicked,

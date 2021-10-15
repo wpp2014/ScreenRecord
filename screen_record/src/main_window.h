@@ -30,6 +30,8 @@ class MainWindow : public QMainWindow {
   void onClose();
   void onMinimize();
 
+  void onClickSettingButton();
+
   void onClickStartBtn();
   void onClickStopBtn();
   void onClickOpenBtn();
