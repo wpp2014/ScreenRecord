@@ -3,9 +3,9 @@
 #define STR(x)                           #x
 #define VERSION(a, b, c, d)              STR(a) "." STR(b) "." STR(c) "." STR(d)
 
-#define MAJOR                            1
+#define MAJOR                            2
 #define MINOR                            0
-#define BUILD                            59
+#define BUILD                            3
 #define PATCH                            0
 
 #define VERSION_NUM                      MAJOR, MINOR, BUILD, PATCH
