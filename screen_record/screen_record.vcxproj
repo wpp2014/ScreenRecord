@@ -31,12 +31,12 @@
     <Import Project="$(QtMsBuild)\qt_defaults.props" />
   </ImportGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|Win32'" Label="QtSettings">
-    <QtInstall>5.15.2_msvc2019_static</QtInstall>
+    <QtInstall>5.15.2_msvc2019</QtInstall>
     <QtModules>core;gui;widgets</QtModules>
     <QtBuildConfig>debug</QtBuildConfig>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|Win32'" Label="QtSettings">
-    <QtInstall>5.15.2_msvc2019_static</QtInstall>
+    <QtInstall>5.15.2_msvc2019</QtInstall>
     <QtModules>core;gui;widgets</QtModules>
     <QtBuildConfig>release</QtBuildConfig>
   </PropertyGroup>
@@ -64,27 +64,61 @@
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
-      <AdditionalIncludeDirectories>.;..;$(IntDir)..;$(VcpkgPath)\x86-windows-static\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>.;..;$(IntDir)..;$(VcpkgPath)\x86-windows\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <WarningLevel>Level4</WarningLevel>
       <DisableSpecificWarnings>4100;%(DisableSpecificWarnings)</DisableSpecificWarnings>
-      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;_CRT_SECURE_NO_DEPRECATE;_CRT_NONSTDC_NO_DEPRECATE;GLOG_NO_ABBREVIATED_SEVERITIES;GOOGLE_GLOG_DLL_DECL=;NOMINMAX;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;_CRT_SECURE_NO_DEPRECATE;_CRT_NONSTDC_NO_DEPRECATE;GLOG_NO_ABBREVIATED_SEVERITIES;NOMINMAX;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
-      <AdditionalLibraryDirectories>$(VcpkgPath)\x86-windows-static\debug\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>$(OutDir)base.lib;$(OutDir)capturer.lib;$(OutDir)encoder.lib;avcodec.lib;avformat.lib;avutil.lib;bcrypt.lib;d3d9.lib;gflags_static_debug.lib;glog.lib;libx264.lib;mfplat.lib;mfuuid.lib;secur32.lib;strmiids.lib;swresample.lib;swscale.lib;vpx.lib;winmm.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(VcpkgPath)\x86-windows\debug\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>$(OutDir)base.lib;$(OutDir)capturer.lib;$(OutDir)encoder.lib;avcodec.lib;avformat.lib;avutil.lib;bcrypt.lib;d3d9.lib;d3d11.lib;gflags_debug.lib;glog.lib;libx264.lib;mfplat.lib;mfuuid.lib;secur32.lib;strmiids.lib;swresample.lib;swscale.lib;vpx.lib;winmm.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
+    <PostBuildEvent>
+      <Command>@echo off
+
+xcopy /Y $(VcpkgPath)\x86-windows\debug\bin\avcodec-58.dll $(OutDir)
+xcopy /Y $(VcpkgPath)\x86-windows\debug\bin\avdevice-58.dll $(OutDir)
+xcopy /Y $(VcpkgPath)\x86-windows\debug\bin\avfilter-7.dll $(OutDir)
+xcopy /Y $(VcpkgPath)\x86-windows\debug\bin\avformat-58.dll $(OutDir)
+xcopy /Y $(VcpkgPath)\x86-windows\debug\bin\avresample-4.dll $(OutDir)
+xcopy /Y $(VcpkgPath)\x86-windows\debug\bin\avutil-56.dll $(OutDir)
+xcopy /Y $(VcpkgPath)\x86-windows\debug\bin\gflags_debug.dll $(OutDir)
+xcopy /Y $(VcpkgPath)\x86-windows\debug\bin\glog.dll $(OutDir)
+xcopy /Y $(VcpkgPath)\x86-windows\debug\bin\libx264-157.dll $(OutDir)
+xcopy /Y $(VcpkgPath)\x86-windows\debug\bin\swresample-3.dll $(OutDir)
+xcopy /Y $(VcpkgPath)\x86-windows\debug\bin\swscale-5.dll $(OutDir)
+
+@call C:\Qt\5.15.2\msvc2019\bin\windeployqt.exe "$(OutDir)$(TargetName)$(TargetExt)"</Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
-      <AdditionalIncludeDirectories>.;..;$(IntDir)..;$(VcpkgPath)\x86-windows-static\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>.;..;$(IntDir)..;$(VcpkgPath)\x86-windows\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <WarningLevel>Level4</WarningLevel>
       <DisableSpecificWarnings>4100;%(DisableSpecificWarnings)</DisableSpecificWarnings>
-      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;_CRT_SECURE_NO_DEPRECATE;_CRT_NONSTDC_NO_DEPRECATE;GLOG_NO_ABBREVIATED_SEVERITIES;GOOGLE_GLOG_DLL_DECL=;NOMINMAX;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;_CRT_SECURE_NO_DEPRECATE;_CRT_NONSTDC_NO_DEPRECATE;GLOG_NO_ABBREVIATED_SEVERITIES;NOMINMAX;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
-      <AdditionalLibraryDirectories>$(VcpkgPath)\x86-windows-static\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>$(OutDir)base.lib;$(OutDir)capturer.lib;$(OutDir)encoder.lib;avcodec.lib;avformat.lib;avutil.lib;bcrypt.lib;d3d9.lib;gflags_static.lib;glog.lib;libx264.lib;mfplat.lib;mfuuid.lib;secur32.lib;strmiids.lib;swresample.lib;swscale.lib;vpx.lib;winmm.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(VcpkgPath)\x86-windows\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>$(OutDir)base.lib;$(OutDir)capturer.lib;$(OutDir)encoder.lib;avcodec.lib;avformat.lib;avutil.lib;bcrypt.lib;d3d9.lib;d3d11.lib;gflags.lib;glog.lib;libx264.lib;mfplat.lib;mfuuid.lib;secur32.lib;strmiids.lib;swresample.lib;swscale.lib;vpx.lib;winmm.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
+    <PostBuildEvent>
+      <Command>@echo off
+
+xcopy /Y $(VcpkgPath)\x86-windows\bin\avcodec-58.dll $(OutDir)
+xcopy /Y $(VcpkgPath)\x86-windows\bin\avdevice-58.dll $(OutDir)
+xcopy /Y $(VcpkgPath)\x86-windows\bin\avfilter-7.dll $(OutDir)
+xcopy /Y $(VcpkgPath)\x86-windows\bin\avformat-58.dll $(OutDir)
+xcopy /Y $(VcpkgPath)\x86-windows\bin\avresample-4.dll $(OutDir)
+xcopy /Y $(VcpkgPath)\x86-windows\bin\avutil-56.dll $(OutDir)
+xcopy /Y $(VcpkgPath)\x86-windows\bin\gflags_debug.dll $(OutDir)
+xcopy /Y $(VcpkgPath)\x86-windows\bin\glog.dll $(OutDir)
+xcopy /Y $(VcpkgPath)\x86-windows\bin\libx264-157.dll $(OutDir)
+xcopy /Y $(VcpkgPath)\x86-windows\bin\swresample-3.dll $(OutDir)
+xcopy /Y $(VcpkgPath)\x86-windows\bin\swscale-5.dll $(OutDir)
+
+@call C:\Qt\5.15.2\msvc2019\bin\windeployqt.exe "$(OutDir)$(TargetName)$(TargetExt)"</Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|Win32'" Label="Configuration">
     <ClCompile>
@@ -92,7 +126,7 @@
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <Optimization>Disabled</Optimization>
-      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -105,7 +139,7 @@
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <DebugInformationFormat>None</DebugInformationFormat>
       <Optimization>MaxSpeed</Optimization>
-      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
