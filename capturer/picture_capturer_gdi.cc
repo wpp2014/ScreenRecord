@@ -84,5 +84,5 @@ bool PictureCapturerGdi::CaptureScreen(AVData** av_data) {
   *av_data = tmp;
 
   SelectObject(memory_dc_, old_selected_bitmap_);
-  return av_data;
+  return true;
 }
