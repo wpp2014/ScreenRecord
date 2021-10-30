@@ -285,7 +285,6 @@ void ScreenRecorder::capturePictureThread(int fps) {
         delete av_data;
         break;
       }
-      delete av_data;
     }
 
     ++count;
