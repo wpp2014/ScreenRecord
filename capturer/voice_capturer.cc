@@ -205,6 +205,7 @@ end:
 
 void VoiceCapturer::Stop() {
   DCHECK(start_thread_id_ == GetCurrentThreadId());
+  start_thread_id_ = 0;
 
   if (!is_recording_) {
     return;
@@ -257,8 +258,6 @@ end:
   micor_handle_ = NULL;
   device_is_opened_ = false;
   is_recording_ = false;
-
-  start_thread_id_ = 0;
 }
 
 void VoiceCapturer::Pause() {
