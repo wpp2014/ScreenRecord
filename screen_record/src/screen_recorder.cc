@@ -243,11 +243,12 @@ void ScreenRecorder::capturePictureThread(int fps) {
   double interval = 1000.0 / fps;
 
   PictureCapturer* capturer = nullptr;
-  if (stricmp(FLAGS_capturer.c_str(), "gdi") == 0) {
+  QString capture_type = g_setting_manager->CaptureType();
+  if (capture_type == QString("GDI")) {
     capturer = new PictureCapturerGdi();
-  } else if (stricmp(FLAGS_capturer.c_str(), "d3d9") == 0) {
+  } else if (capture_type == QString("D3D9")) {
     capturer = new PictureCapturerD3D9();
-  } else if (stricmp(FLAGS_capturer.c_str(), "dxgi") == 0) {
+  } else if (capture_type == QString("DXGI")) {
     capturer = new PictureCapturerDXGI();
   } else {
     CHECK(false) << "不支持的截屏方式";
