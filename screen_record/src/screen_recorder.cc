@@ -280,7 +280,7 @@ void ScreenRecorder::capturePictureThread(int fps) {
     if (!capturer->CaptureScreen(&av_data)) {
       capture_result = false;
       break;
-    } else {
+    } else if (av_data) {
       av_data->timestamp = pts;
       if (!data_queue_.Push(av_data, abort_func_)) {
         delete av_data;
