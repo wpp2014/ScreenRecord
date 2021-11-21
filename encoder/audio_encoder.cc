@@ -1,6 +1,6 @@
 ﻿#include "encoder/audio_encoder.h"
 
-#include "glog/logging.h"
+#include "base/check.h"
 
 AudioEncoder::AudioEncoder(const AudioConfig& audio_config)
     : initialized_(false),

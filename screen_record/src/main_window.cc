@@ -6,14 +6,21 @@
 #include <QtGui/QMouseEvent>
 #include <QtWidgets/QMessageBox>
 
+#include "base/check.h"
 #include "base/strings/sys_string_conversions.h"
-#include "glog/logging.h"
+#include "logger/logger.h"
 #include "res/version.h"
 #include "screen_record/src/argument.h"
 #include "screen_record/src/screen_recorder.h"
 #include "screen_record/src/setting/setting_dialog.h"
 
 const char kName[] = "ScreenRecord";
+
+namespace {
+
+const char kFilter[] = "MainWindow";
+
+}  // namespace
 
 MainWindow::MainWindow(QWidget* parent)
     : QMainWindow(parent),
@@ -126,11 +133,11 @@ void MainWindow::onRecordCompleted() {
 }
 
 void MainWindow::onRecordFailed() {
-  LOG(ERROR) << "录屏失败";
+  LOG_ERROR(kFilter, "录屏失败");
 }
 
 void MainWindow::onRecordCanceled() {
-  LOG(INFO) << "取消录屏";
+  LOG_INFO(kFilter, "取消录屏");
 }
 
 void MainWindow::mousePressEvent(QMouseEvent* event) {
@@ -161,10 +168,10 @@ void MainWindow::start() {
   ui_.btnStop->setEnabled(true);
   ui_.btnStart->setText(QStringLiteral("暂停"));
 
-  LOG(INFO) << "帧率: " << g_setting_manager->fps();
-  LOG(INFO) << "截屏方式: " << g_setting_manager->CaptureType().toStdString();
-  LOG(INFO) << "文件格式: " << g_setting_manager->FileFormat().toStdString();
-  LOG(INFO) << "视频编码格式: " << g_setting_manager->VideoEncoder().toStdString();
+  LOG_INFO(kFilter, "帧率: %d", g_setting_manager->fps());
+  LOG_INFO(kFilter, "截屏方式: %s", g_setting_manager->CaptureType().toStdString().c_str());
+  LOG_INFO(kFilter, "文件格式: %s", g_setting_manager->FileFormat().toStdString().c_str());
+  LOG_INFO(kFilter, "视频编码格式: %s", g_setting_manager->VideoEncoder().toStdString().c_str());
 
   screen_recorder_->startRecord(
       local_path_.absolutePath(), g_setting_manager->fps());

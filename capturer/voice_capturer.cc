@@ -2,10 +2,17 @@
 
 #include <thread>
 
-#include "glog/logging.h"
+#include "base/check.h"
+#include "logger/logger.h"
 
 #define IDM_STOP_CAPTURE            6001
 #define IDM_PAUSE_CAPTURE           6002
+
+namespace {
+
+const char kFilter[] = "VoiceCapturer";
+
+}  // namespace
 
 // static
 DWORD WINAPI VoiceCapturer::HandleVoiceThread(void* param) {
@@ -115,7 +122,7 @@ void VoiceCapturer::Start() {
   start_thread_id_ = GetCurrentThreadId();
 
   if (waveInGetNumDevs() <= 0) {
-    LOG(WARNING) << "未找到录音设备";
+    LOG_WARN(kFilter, "未找到录音设备");
     return;
   }
 
@@ -125,7 +132,7 @@ void VoiceCapturer::Start() {
       CreateThread(NULL, 0, VoiceCapturer::HandleVoiceThread, this, 0,
                    &handle_data_thread_id_);
   if (!handle_data_thread_handle_) {
-    LOG(ERROR) << "创建处理音频数据的线程失败";
+    LOG_ERROR(kFilter, "创建处理音频数据的线程失败");
     return;
   }
 
@@ -161,20 +168,20 @@ void VoiceCapturer::Start() {
     result =
         waveInPrepareHeader(micor_handle_, &wave_headers_[i], sizeof(WAVEHDR));
     if (result != MMSYSERR_NOERROR) {
-      LOG(ERROR) << "调用waveInPrepareHeader失败";
+      LOG_ERROR(kFilter, "调用waveInPrepareHeader失败");
       goto end;
     }
 
     result = waveInAddBuffer(micor_handle_, &wave_headers_[i], sizeof(WAVEHDR));
     if (result != MMSYSERR_NOERROR) {
-      LOG(ERROR) << "调用waveInAddBuffer失败";
+      LOG_ERROR(kFilter, "调用waveInAddBuffer失败");
       goto end;
     }
   }
 
   result = waveInStart(micor_handle_);
   if (res != MMSYSERR_NOERROR) {
-    LOG(ERROR) << "开始录音失败";
+    LOG_ERROR(kFilter, "开始录音失败");
     goto end;
   }
 

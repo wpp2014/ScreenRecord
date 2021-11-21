@@ -71,7 +71,7 @@
     </ClCompile>
     <Link>
       <AdditionalLibraryDirectories>$(VcpkgPath)\x86-windows\debug\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>$(OutDir)base.lib;$(OutDir)capturer.lib;$(OutDir)encoder.lib;avcodec.lib;avformat.lib;avutil.lib;bcrypt.lib;d3d9.lib;d3d11.lib;gflags_debug.lib;glog.lib;libx264.lib;mfplat.lib;mfuuid.lib;secur32.lib;strmiids.lib;swresample.lib;swscale.lib;vpx.lib;winmm.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>$(OutDir)base.lib;$(OutDir)capturer.lib;$(OutDir)encoder.lib;$(OutDir)logger.lib;avcodec.lib;avformat.lib;avutil.lib;bcrypt.lib;d3d9.lib;d3d11.lib;gflags_debug.lib;libx264.lib;mfplat.lib;mfuuid.lib;secur32.lib;strmiids.lib;swresample.lib;swscale.lib;vpx.lib;winmm.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
       <Command>@echo off
@@ -100,7 +100,7 @@ xcopy /Y $(VcpkgPath)\x86-windows\debug\bin\swscale-5.dll $(OutDir)
     </ClCompile>
     <Link>
       <AdditionalLibraryDirectories>$(VcpkgPath)\x86-windows\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>$(OutDir)base.lib;$(OutDir)capturer.lib;$(OutDir)encoder.lib;avcodec.lib;avformat.lib;avutil.lib;bcrypt.lib;d3d9.lib;d3d11.lib;gflags.lib;glog.lib;libx264.lib;mfplat.lib;mfuuid.lib;secur32.lib;strmiids.lib;swresample.lib;swscale.lib;vpx.lib;winmm.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>$(OutDir)base.lib;$(OutDir)capturer.lib;$(OutDir)encoder.lib;$(OutDir)logger.lib;avcodec.lib;avformat.lib;avutil.lib;bcrypt.lib;d3d9.lib;d3d11.lib;gflags.lib;libx264.lib;mfplat.lib;mfuuid.lib;secur32.lib;strmiids.lib;swresample.lib;swscale.lib;vpx.lib;winmm.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
       <Command>@echo off

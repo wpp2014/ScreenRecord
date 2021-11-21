@@ -3,8 +3,8 @@
 #include <QtCore/QDir>
 #include <QtCore/QSettings>
 
+#include "base/check.h"
 #include "base/files/file_util.h"
-#include "base/logging.h"
 #include "base/path_service.h"
 #include "base/strings/sys_string_conversions.h"
 #include "screen_record/src/constants.h"

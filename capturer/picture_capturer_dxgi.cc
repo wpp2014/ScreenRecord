@@ -2,9 +2,16 @@
 
 #include <assert.h>
 
-#include "glog/logging.h"
+#include "base/check.h"
+#include "logger/logger.h"
 
 using Microsoft::WRL::ComPtr;
+
+namespace {
+
+const char kFilter[] = "PictureCapturerDXGI";
+
+}  // namespace
 
 std::string NumToHexStr(HRESULT hr) {
   char buffer[16];
@@ -36,14 +43,14 @@ bool PictureCapturerDXGI::CaptureScreen(AVData** av_data) {
     return true;
   }
   if (FAILED(hr)) {
-    LOG(ERROR) << "抓屏失败: " << NumToHexStr(hr);
+    LOG_ERROR(kFilter, "抓屏失败: %s", NumToHexStr(hr).c_str());
     return false;
   }
 
   acquired_desktop_image_.Reset();
   hr = dxgi_resource->QueryInterface(acquired_desktop_image_.GetAddressOf());
   if (FAILED(hr)) {
-    LOG(ERROR) << "Failed to desktop image: " << NumToHexStr(hr);
+    LOG_ERROR(kFilter, "Failed to desktop image: %s", NumToHexStr(hr).c_str());
     desk_dupl_->ReleaseFrame();
     return false;
   }
@@ -59,7 +66,7 @@ bool PictureCapturerDXGI::CaptureScreen(AVData** av_data) {
   ComPtr<IDXGISurface> dxgi_surface;
   hr = shared_image_->QueryInterface(dxgi_surface.GetAddressOf());
   if (FAILED(hr)) {
-    LOG(ERROR) << "Failed to get DXGISurface: " << NumToHexStr(hr);
+    LOG_ERROR(kFilter, "Failed to get DXGISurface: %s", NumToHexStr(hr).c_str());
     desk_dupl_->ReleaseFrame();
     return false;
   }
@@ -67,7 +74,7 @@ bool PictureCapturerDXGI::CaptureScreen(AVData** av_data) {
   DXGI_MAPPED_RECT dxgi_mapped_rect;
   hr = dxgi_surface->Map(&dxgi_mapped_rect, DXGI_MAP_READ);
   if (FAILED(hr)) {
-    LOG(ERROR) << "Failed to map DXGISurface: " << NumToHexStr(hr);
+    LOG_ERROR(kFilter, "Failed to map DXGISurface: %s", NumToHexStr(hr).c_str());
     desk_dupl_->ReleaseFrame();
     return false;
   }
@@ -87,7 +94,7 @@ bool PictureCapturerDXGI::CaptureScreen(AVData** av_data) {
 
   hr = dxgi_surface->Unmap();
   if (FAILED(hr)) {
-    LOG(ERROR) << "Failed to unmap IDXGISurface: " << NumToHexStr(hr);
+    LOG_ERROR(kFilter, "Failed to unmap IDXGISurface: %s", NumToHexStr(hr).c_str());
     desk_dupl_->ReleaseFrame();
     delete *av_data;
     *av_data = nullptr;
@@ -136,14 +143,14 @@ bool PictureCapturerDXGI::InitDXGI() {
     }
   }
   if (FAILED(hr)) {
-    LOG(ERROR) << "Failed to call D3D11CreateDevice: " << NumToHexStr(hr);
+    LOG_ERROR(kFilter, "Failed to call D3D11CreateDevice: %s", NumToHexStr(hr).c_str());
     return false;
   }
 
   ComPtr<IDXGIDevice> dxgi_device;
   hr = d3d11_device_->QueryInterface(dxgi_device.GetAddressOf());
   if (FAILED(hr)) {
-    LOG(ERROR) << "Failed to get DXGIDevice: " << NumToHexStr(hr);
+    LOG_ERROR(kFilter, "Failed to get DXGIDevice: %s", NumToHexStr(hr).c_str());
     return false;
   }
 
@@ -152,7 +159,7 @@ bool PictureCapturerDXGI::InitDXGI() {
       __uuidof(IDXGIAdapter),
       reinterpret_cast<void**>(dxgi_adapter.GetAddressOf()));
   if (FAILED(hr)) {
-    LOG(ERROR) << "Failed to get DXGIAdapter: " << NumToHexStr(hr);
+    LOG_ERROR(kFilter, "Failed to get DXGIAdapter: %s", NumToHexStr(hr).c_str());
     return false;
   }
 
@@ -160,13 +167,13 @@ bool PictureCapturerDXGI::InitDXGI() {
   ComPtr<IDXGIOutput> dxgi_output;
   hr = dxgi_adapter->EnumOutputs(0, dxgi_output.GetAddressOf());
   if (FAILED(hr)) {
-    LOG(ERROR) << "Failed to call EnumOutputs: " << NumToHexStr(hr);
+    LOG_ERROR(kFilter, "Failed to call EnumOutputs: %s", NumToHexStr(hr).c_str());
     return false;
   }
 
   hr = dxgi_output->GetDesc(&output_desc_);
   if (FAILED(hr)) {
-    LOG(ERROR) << "Failed to get output desc: " << NumToHexStr(hr);
+    LOG_ERROR(kFilter, "Failed to get output desc: %s", NumToHexStr(hr).c_str());
     return false;
   }
 
@@ -176,14 +183,14 @@ bool PictureCapturerDXGI::InitDXGI() {
   ComPtr<IDXGIOutput1> dxgi_output1;
   hr = dxgi_output->QueryInterface(dxgi_output1.GetAddressOf());
   if (FAILED(hr)) {
-    LOG(ERROR) << "Failed to get DXGIOutput1: " << NumToHexStr(hr);
+    LOG_ERROR(kFilter, "Failed to get DXGIOutput1: %s", NumToHexStr(hr).c_str());
     return false;
   }
 
   hr = dxgi_output1->DuplicateOutput(d3d11_device_.Get(),
                                      desk_dupl_.GetAddressOf());
   if (FAILED(hr)) {
-    LOG(ERROR) << "Failed to call DuplicateOutput: " << NumToHexStr(hr);
+    LOG_ERROR(kFilter, "Failed to call DuplicateOutput: %s", NumToHexStr(hr).c_str());
     return false;
   }
 
@@ -203,7 +210,7 @@ bool PictureCapturerDXGI::InitDXGI() {
   hr = d3d11_device_->CreateTexture2D(
       &desc, NULL, shared_image_.GetAddressOf());
   if (FAILED(hr)) {
-    LOG(ERROR) << "Failed to create shared surface: " << NumToHexStr(hr);
+    LOG_ERROR(kFilter, "Failed to create shared surface: %s", NumToHexStr(hr).c_str());
     return false;
   }
 
@@ -245,7 +252,7 @@ bool PictureCapturerDXGI::GetMouse(DXGI_OUTDUPL_FRAME_INFO* frame_info) {
     pointer_info_.shape_buffer =
         new (std::nothrow) uint8_t[frame_info->PointerShapeBufferSize];
     if (pointer_info_.shape_buffer == nullptr) {
-      LOG(ERROR) << "分配内存失败。";
+      LOG_ERROR(kFilter, "分配内存失败。");
       return false;
     }
     pointer_info_.buffer_size = frame_info->PointerShapeBufferSize;
@@ -259,7 +266,7 @@ bool PictureCapturerDXGI::GetMouse(DXGI_OUTDUPL_FRAME_INFO* frame_info) {
       &buffer_required_size,
       &pointer_info_.shape_info);
   if (FAILED(hr)) {
-    LOG(ERROR) << "获取光标数据失败: " << NumToHexStr(hr);
+    LOG_ERROR(kFilter, "获取光标数据失败: %s", NumToHexStr(hr).c_str());
 
     delete pointer_info_.shape_buffer;
     pointer_info_.shape_buffer = nullptr;
@@ -344,7 +351,7 @@ void PictureCapturerDXGI::DrawMouse() {
   hr = d3d11_device_->CreateTexture2D(
       &shape_desc, &shape_init_data, shape_texture.GetAddressOf());
   if (FAILED(hr)) {
-    LOG(WARNING) << "Failed to create shape ID3D11Texture: " << NumToHexStr(hr);
+    LOG_WARN(kFilter, "Failed to create shape ID3D11Texture: %s", NumToHexStr(hr).c_str());
     goto end;
   }
 
@@ -425,7 +432,7 @@ bool PictureCapturerDXGI::ProcessMonoMask(bool is_mono,
   HRESULT hr = d3d11_device_->CreateTexture2D(&copy_texture_desc, nullptr,
                                               copy_texture.GetAddressOf());
   if (FAILED(hr)) {
-    LOG(WARNING) << "Failed creating staging texture for pointer: " << NumToHexStr(hr);
+    LOG_WARN(kFilter, "Failed creating staging texture for pointer: %s", NumToHexStr(hr).c_str());
     return false;
   }
 
@@ -439,20 +446,20 @@ bool PictureCapturerDXGI::ProcessMonoMask(bool is_mono,
   ComPtr<IDXGISurface> copy_surface;
   hr = copy_texture->QueryInterface(copy_surface.GetAddressOf());
   if (FAILED(hr)) {
-    LOG(WARNING) << "Failed to QI staging texture into IDXGISurface for pointer: " << NumToHexStr(hr);
+    LOG_WARN(kFilter, "Failed to QI staging texture into IDXGISurface for pointer: %s", NumToHexStr(hr).c_str());
     return false;
   }
 
   DXGI_MAPPED_RECT mapped_surface;
   hr = copy_surface->Map(&mapped_surface, DXGI_MAP_READ);
   if (FAILED(hr)) {
-    LOG(WARNING) << "Failed to map surface for pointer: " << NumToHexStr(hr);
+    LOG_WARN(kFilter, "Failed to map surface for pointer: %s", NumToHexStr(hr).c_str());
     return false;
   }
 
   *init_buffer = new (std::nothrow) uint8_t[*shape_width * *shape_height * 4];
   if (!(*init_buffer)) {
-    LOG(WARNING) << "Failed to allocate memory for new mouse shape buffer.";
+    LOG_WARN(kFilter, "Failed to allocate memory for new mouse shape buffer.");
     copy_surface->Unmap();
     return false;
   }
@@ -509,7 +516,7 @@ bool PictureCapturerDXGI::ProcessMonoMask(bool is_mono,
 
   hr = copy_surface->Unmap();
   if (FAILED(hr)) {
-    LOG(WARNING) << "Failed to unmap surface for pointer: " << NumToHexStr(hr);
+    LOG_WARN(kFilter, "Failed to unmap surface for pointer: %s", NumToHexStr(hr).c_str());
     delete[](*init_buffer);
     *init_buffer = nullptr;
     return false;

@@ -1,6 +1,6 @@
 ﻿#include "capturer/picture_capturer_gdi.h"
 
-#include "glog/logging.h"
+#include "base/check.h"
 
 namespace {
 

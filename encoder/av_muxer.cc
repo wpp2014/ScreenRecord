@@ -1,7 +1,6 @@
 ﻿#include "encoder/av_muxer.h"
 
-#include "glog/logging.h"
-
+#include "base/check.h"
 #include "encoder/audio_encoder.h"
 #include "encoder/video_encoder.h"
 

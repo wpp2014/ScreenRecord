@@ -2,7 +2,7 @@
 
 #include <memory>
 
-#include "glog/logging.h"
+#include "base/check.h"
 
 PictureCapturerD3D9::PictureCapturerD3D9()
     : d3d9_initialized_(false), width_(0), height_(0) {

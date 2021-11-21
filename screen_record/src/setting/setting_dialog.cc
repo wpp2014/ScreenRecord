@@ -2,8 +2,8 @@
 
 #include <QtGui/QMouseEvent>
 
+#include "base/check.h"
 #include "encoder/ffmpeg.h"
-#include "glog/logging.h"
 #include "screen_record/src/argument.h"
 #include "screen_record/src/setting/setting_manager.h"
 

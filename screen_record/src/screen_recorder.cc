@@ -10,11 +10,13 @@
 #include "capturer/voice_capturer.h"
 #include "encoder/av_config.h"
 #include "encoder/av_muxer.h"
-#include "glog/logging.h"
+#include "logger/logger.h"
 #include "screen_record/src/argument.h"
 #include "screen_record/src/util/time_helper.h"
 
 namespace {
+
+const char kFilter[] = "ScreenRecorder";
 
 // 声道数
 const uint16_t kChannels = 2;
@@ -154,7 +156,7 @@ void ScreenRecorder::restartRecord() {
 }
 
 void ScreenRecorder::run() {
-  LOG(INFO) << "开始录屏";
+  LOG_INFO(kFilter, "开始录屏");
 
   // 获取屏幕宽高
   int width = 0;
@@ -218,7 +220,7 @@ void ScreenRecorder::run() {
 
   capture_picture_thread_.join();
 
-  LOG(INFO) << "结束录屏";
+  LOG_INFO(kFilter, "结束录屏");
 }
 
 void ScreenRecorder::handleVoiceDataCallback(const uint8_t* data, int len) {
@@ -335,5 +337,5 @@ void ScreenRecorder::capturePictureThread(int fps) {
   // 队列发送通知，解决暂停录屏之后直接点击停止按钮，导致编码线程阻塞的问题
   data_queue_.Notify();
 
-  LOG(INFO) << info;
+  LOG_INFO(kFilter, "%s", info);
 }

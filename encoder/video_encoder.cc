@@ -1,6 +1,6 @@
 ﻿#include "encoder/video_encoder.h"
 
-#include "glog/logging.h"
+#include "base/check.h"
 
 namespace {
 
