@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.31624.102
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.32014.148
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "screen_record", "screen_record\screen_record.vcxproj", "{DA498E0B-8E0A-4825-A34F-8378E661775D}"
 	ProjectSection(ProjectDependencies) = postProject
@@ -33,6 +33,10 @@ EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "base", "base\base.vcxproj", "{1940B4EC-C6D2-46AF-9289-E32995D29617}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "logger", "logger\logger.vcxproj", "{F590B3A2-E2C1-4641-B854-E070352589BF}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "example", "example", "{7266891B-3EC0-4875-A9AF-E468DC61FB67}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "gdi_capture", "example\gdi_capture\gdi_capture.vcxproj", "{D83F2D14-D2CD-44B6-80A1-31388F67D812}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -96,6 +100,14 @@ Global
 		{F590B3A2-E2C1-4641-B854-E070352589BF}.Release|x64.ActiveCfg = Release|Win32
 		{F590B3A2-E2C1-4641-B854-E070352589BF}.Release|x86.ActiveCfg = Release|Win32
 		{F590B3A2-E2C1-4641-B854-E070352589BF}.Release|x86.Build.0 = Release|Win32
+		{D83F2D14-D2CD-44B6-80A1-31388F67D812}.Debug|x64.ActiveCfg = Debug|x64
+		{D83F2D14-D2CD-44B6-80A1-31388F67D812}.Debug|x64.Build.0 = Debug|x64
+		{D83F2D14-D2CD-44B6-80A1-31388F67D812}.Debug|x86.ActiveCfg = Debug|Win32
+		{D83F2D14-D2CD-44B6-80A1-31388F67D812}.Debug|x86.Build.0 = Debug|Win32
+		{D83F2D14-D2CD-44B6-80A1-31388F67D812}.Release|x64.ActiveCfg = Release|x64
+		{D83F2D14-D2CD-44B6-80A1-31388F67D812}.Release|x64.Build.0 = Release|x64
+		{D83F2D14-D2CD-44B6-80A1-31388F67D812}.Release|x86.ActiveCfg = Release|Win32
+		{D83F2D14-D2CD-44B6-80A1-31388F67D812}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -105,6 +117,7 @@ Global
 		{D9F7F750-7C69-452D-BB5B-ACB05F33164F} = {428D2116-31F4-4B99-9954-821B14276077}
 		{8DD0EF2E-2812-4286-A092-5F618D96A717} = {428D2116-31F4-4B99-9954-821B14276077}
 		{B5FDC419-3EE3-4B0C-AC58-0B45709995A9} = {428D2116-31F4-4B99-9954-821B14276077}
+		{D83F2D14-D2CD-44B6-80A1-31388F67D812} = {7266891B-3EC0-4875-A9AF-E468DC61FB67}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {58F3FA65-B58E-4BD9-9993-99A5C621D80D}
