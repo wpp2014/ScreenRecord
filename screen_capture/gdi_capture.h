@@ -18,6 +18,8 @@ class GDICapture : public ScreenCapture {
  private:
   bool Initialize();
 
+  void DrawMouse(HDC hdc);
+
   bool initialized_;
 
   const int bit_count_ = 24;
