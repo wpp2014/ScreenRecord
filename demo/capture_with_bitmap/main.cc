@@ -116,14 +116,14 @@ int main() {
     tjhandle handle = tjInitCompress();
     uint8_t* jpeg_buffer = nullptr;
     uint32_t jpeg_size = 0;
-    int pixel_format = TJPF_BGR;
+    int pixel_format = TJPF_BGRA;
     int jpeg_subsamp = TJSAMP_444;
     int jpeg_qual = 90;
     int flags = 0;
 
     int pitch = picture->size / picture->height;
     jpeg_handle_res = tjCompress2(handle,
-                                  picture->rgb,
+                                  picture->argb,
                                   picture->width,
                                   pitch,
                                   picture->height,

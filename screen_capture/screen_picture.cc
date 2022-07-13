@@ -9,22 +9,22 @@ ScreenPicture::ScreenPicture(const ScreenPicture& other)
     , size(other.size) {
   assert(size > 0);
 
-  rgb = new uint8_t[size];
-  memcpy(rgb, other.rgb, size);
+  argb = new uint8_t[size];
+  memcpy(argb, other.argb, size);
 }
 
 ScreenPicture::ScreenPicture(ScreenPicture&& other)
     : width(other.width)
     , height(other.height)
     , size(other.size)
-    , rgb(other.rgb) {
-  other.rgb = nullptr;
+    , argb(other.argb) {
+  other.argb = nullptr;
 }
 
 ScreenPicture::~ScreenPicture() {
-  if (rgb) {
-    delete[] rgb;
-    rgb = nullptr;
+  if (argb) {
+    delete[] argb;
+    argb = nullptr;
   }
   width = 0;
   height = 0;

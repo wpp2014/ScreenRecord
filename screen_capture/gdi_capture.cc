@@ -52,8 +52,8 @@ ScreenPicture* GDICapture::Capture() {
   picture->width = image_width_;
   picture->height = image_height_;
   picture->size = image_size_;
-  picture->rgb = new uint8_t[image_size_];
-  memcpy(picture->rgb, bitmap_data, image_size_);
+  picture->argb = new uint8_t[image_size_];
+  memcpy(picture->argb, bitmap_data, image_size_);
 
   return picture;
 }

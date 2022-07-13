@@ -22,7 +22,7 @@ class GDICapture : public ScreenCapture {
 
   bool initialized_;
 
-  const int bit_count_ = 24;
+  const int bit_count_ = 32;
 
   int image_width_;
   int image_height_;
