@@ -4,9 +4,11 @@
     <ClInclude Include="screen_capture.h" />
     <ClInclude Include="screen_picture.h" />
     <ClInclude Include="gdi_capture.h" />
+    <ClInclude Include="dxgi_capture.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="screen_picture.cc" />
     <ClCompile Include="gdi_capture.cc" />
+    <ClCompile Include="dxgi_capture.cc" />
   </ItemGroup>
 </Project>
