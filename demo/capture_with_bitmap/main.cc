@@ -9,6 +9,7 @@
 #include <string>
 #include <thread>
 
+#include "screen_capture/dxgi_capture.h"
 #include "screen_capture/gdi_capture.h"
 #include "screen_capture/screen_picture.h"
 #include "utils/scoped_handle.h"
@@ -65,9 +66,42 @@ void SaveDataToBmp(const BITMAPFILEHEADER& bfh,
   CloseHandle(file);
 }
 
-void SaveDataToJpeg(const uint8_t* data,
-                    uint32_t size,
-                    const std::wstring& filepath) {
+void SaveToJpeg(std::unique_ptr<ScreenPicture> picture,
+                const std::wstring& filepath) {
+  tjhandle handle = tjInitCompress();
+  if (!handle) {
+    printf("failed to call tjInitCompress: %s\n", tjGetErrorStr());
+    return;
+  }
+
+  uint8_t* jpeg_buffer = nullptr;
+  uint32_t jpeg_size = 0;
+  int pixel_format = TJPF_BGRA;
+  int jpeg_subsamp = TJSAMP_444;
+  int jpeg_qual = 90;
+  int flags = 0;
+
+  int pitch = picture->size / picture->height;
+  int jpeg_handle_res = tjCompress2(handle,
+                                    picture->argb,
+                                    picture->width,
+                                    pitch,
+                                    picture->height,
+                           pixel_format, 
+                                    &jpeg_buffer, 
+                                    (unsigned long*)&jpeg_size,
+                           jpeg_subsamp, 
+                                    jpeg_qual,
+                                    flags);
+  if (jpeg_handle_res != 0) {
+    printf("failed to call tjCompress2: %s\n", tjGetErrorStr2(handle));
+    if (jpeg_buffer)
+      tjFree(jpeg_buffer);
+    tjDestroy(handle);
+
+    return;
+  }
+
   utils::ScopedHandle file(CreateFile(filepath.c_str(),
                            GENERIC_WRITE,
                            0,
@@ -77,155 +111,63 @@ void SaveDataToJpeg(const uint8_t* data,
                            NULL));
   if (!file || file == INVALID_HANDLE_VALUE) {
     wprintf(L"failed to create %ls\n", filepath.c_str());
+    tjFree(jpeg_buffer);
+    tjDestroy(handle);
     return;
   }
 
   DWORD written = 0;
-  BOOL res = WriteFile(file, (void*)data, size, &written, NULL);
+  BOOL res = WriteFile(file, (void*)jpeg_buffer, jpeg_size, &written, NULL);
   if (!res) {
-    wprintf(L"failed to write bitmap data, filepath: %ls\n", filepath.c_str());
-    return;
+    wprintf(L"failed to write jpg file, filepath: %ls\n", filepath.c_str());
   }
+
+  tjFree(jpeg_buffer);
+  tjDestroy(handle);
 }
 
 int main() {
-  wchar_t buffer[1024];
-  GetModuleFileName(NULL, buffer, 1024);
-  PathRemoveFileSpec(buffer);
+  wchar_t dir[1024];
+  GetModuleFileName(NULL, dir, 1024);
+  PathRemoveFileSpec(dir);
 
-  std::wstring dir(buffer);
+  std::unique_ptr<ScreenCapture> gdi_capturer(new GDICapture());
+  std::unique_ptr<ScreenCapture> dxgi_capturer(new DXGICapture());
 
-  std::unique_ptr<ScreenCapture> capturer(new GDICapture());
-  if (!capturer) {
-    printf("new GDICapture failed\n");
-    return 0;
-  }
+  uint64_t start = 0;
+  uint64_t end = 0;
+  wchar_t filepath[1024];
 
-  std::unique_ptr<ScreenPicture> first_picture(capturer->Capture());
-  if (!first_picture) {
-    printf("failed to capture\n");
-    return 0;
-  }
-
-  first_picture.reset();
-
-  int jpeg_handle_res = 0;
   for (int i = 0; i < 10; ++i) {
-    std::unique_ptr<ScreenPicture> picture(capturer->Capture());
+    memset(filepath, 0, sizeof(wchar_t) * 1024);
+    swprintf(filepath, L"%ls\\gdi_%lld.jpg", dir, time(NULL));
 
-    tjhandle handle = tjInitCompress();
-    uint8_t* jpeg_buffer = nullptr;
-    uint32_t jpeg_size = 0;
-    int pixel_format = TJPF_BGRA;
-    int jpeg_subsamp = TJSAMP_444;
-    int jpeg_qual = 90;
-    int flags = 0;
+    start = GetTickCount64();
+    std::unique_ptr<ScreenPicture> picture(gdi_capturer->Capture());
+    end = GetTickCount64();
 
-    int pitch = picture->size / picture->height;
-    jpeg_handle_res = tjCompress2(handle,
-                                  picture->argb,
-                                  picture->width,
-                                  pitch,
-                                  picture->height,
-                                  pixel_format,
-                                  &jpeg_buffer,
-                                  (unsigned long*)&jpeg_size,
-                                  jpeg_subsamp,
-                                  jpeg_qual,
-                                  flags);
-    if (jpeg_handle_res != 0) {
-      printf("failed to call tjCompress2\n");
-    } else {
-      std::wstring filename = std::to_wstring(time(NULL)) + L".jpg";
-      std::wstring filepath = dir + L"\\" + filename;
-      SaveDataToJpeg(jpeg_buffer, jpeg_size, filepath);
-    }
+    wprintf(L"gdi: %llu  %ls\n", end - start, filepath);
 
-    tjFree(jpeg_buffer);
-    tjDestroy(handle);
+    SaveToJpeg(std::move(picture), filepath);
 
     std::this_thread::sleep_for(2000ms);
   }
 
-#if 0
-  HWND hwnd = NULL;
-  HDC src_dc = NULL;
-  HDC mem_dc = NULL;
-
-  BITMAPINFO bitmap_info = {0};
-  BITMAPINFOHEADER* bih = &(bitmap_info.bmiHeader);
-
-  // src_dc = GetDC(NULL);
-  src_dc = CreateDC(TEXT("DISPLAY"), NULL, NULL, NULL);
-  if (!src_dc) {
-    printf("AAAAAA\n");
-    return 0;
-  }
-  mem_dc = CreateCompatibleDC(src_dc);
-  if (!mem_dc) {
-    printf("BBBBBB\n");
-    return 0;
-  }
-
-  utils::VirtualScreen vs;
-  RECT rect = vs.VirtualScreenRect();
-  const int width = vs.VirtualScreenWidth();
-  const int height = vs.VirtualScreenHeight();
-
-  const int bit_count = 24;
-  bitmap_info.bmiHeader.biSize = sizeof(BITMAPINFOHEADER);
-  bitmap_info.bmiHeader.biWidth = width;
-  bitmap_info.bmiHeader.biHeight = -height;
-  bitmap_info.bmiHeader.biPlanes = 1;
-  bitmap_info.bmiHeader.biBitCount = bit_count;
-  bitmap_info.bmiHeader.biCompression = BI_RGB;
-
-  const uint32_t offset = sizeof(BITMAPFILEHEADER) + sizeof(BITMAPINFOHEADER);
-  const uint32_t bitmap_size = ((width * bit_count + 31) & ~31) / 8 * height;
-
-  BITMAPFILEHEADER bfh;
-  ZeroMemory(&bfh, sizeof(bfh));
-  bfh.bfType = 0x4d42;
-  bfh.bfReserved1 = 0;
-  bfh.bfReserved2 = 0;
-  bfh.bfSize = offset + bitmap_size;
-  bfh.bfOffBits = offset;
-
   for (int i = 0; i < 10; ++i) {
-    uint8_t* bitmap_data = nullptr;
-    utils::ScopedBitmap bitmap;
+    memset(filepath, 0, sizeof(wchar_t) * 1024);
+    swprintf(filepath, L"%ls\\dxgi_%lld.jpg", dir, time(NULL));
 
-    do {
-      bitmap = CreateDIBSection(src_dc, &bitmap_info, DIB_RGB_COLORS, reinterpret_cast<void**>(&bitmap_data), NULL, 0);
-      if (!bitmap) {
-        DWORD err_code = GetLastError();
-        printf("%-02d: failed to call CreateDIBSection, err code: %lu\n", i, err_code);
-        break;
-      }
+    start = GetTickCount64();
+    std::unique_ptr<ScreenPicture> picture(gdi_capturer->Capture());
+    if (picture) {
+      end = GetTickCount64();
+      wprintf(L"dxgi: %llu  %ls\n", end - start, filepath);
 
-      SelectObject(mem_dc, bitmap);
-      BOOL res = BitBlt(mem_dc,
-                        0, 0,
-                        width, height,
-                        src_dc,
-                        rect.left, rect.top,
-                        SRCCOPY);
-      if (!res) {
-        printf("%d: failed to call BitBlt\n", i);
-        break;
-      }
+      SaveToJpeg(std::move(picture), filepath);
+    }
 
-      std::wstring filename = std::to_wstring(time(NULL)) + L".bmp";
-      std::wstring filepath = dir + L"\\" + filename;
-      SaveDataToBmp(bfh, *bih, bitmap_data, bitmap_size, filepath);
-    } while (false);
-
-    std::this_thread::sleep_for(std::chrono::seconds(1));
+    std::this_thread::sleep_for(2000ms);
   }
-
-  DeleteDC(mem_dc);
-  ReleaseDC(hwnd, src_dc);
-#endif
 
   return 0;
 }
