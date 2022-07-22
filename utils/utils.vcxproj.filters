@@ -5,6 +5,8 @@
     <ClCompile Include="rect.cc" />
     <ClCompile Include="size.cc" />
     <ClCompile Include="point.cc" />
+    <ClCompile Include="clock_watcher.cc" />
+    <ClCompile Include="utils.cc" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="virtual_screen.h" />
@@ -12,5 +14,7 @@
     <ClInclude Include="size.h" />
     <ClInclude Include="point.h" />
     <ClInclude Include="scoped_handle.h" />
+    <ClInclude Include="clock_watcher.h" />
+    <ClInclude Include="utils.h" />
   </ItemGroup>
 </Project>

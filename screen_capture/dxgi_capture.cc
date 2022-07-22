@@ -39,15 +39,17 @@ ScreenPicture* DXGICapture::Capture() {
 
   DXGI_OUTDUPL_FRAME_INFO frame_info = { 0 };
   ComPtr<IDXGIResource> dxgi_resource;
-  err = _com_error(output_duplication->AcquireNextFrame(
-      kTimeout, &frame_info, dxgi_resource.GetAddressOf()));
-  if (err.Error() != S_OK) {
-    wprintf(L"failed to get frame: %ls\n", err.ErrorMessage());
-    return nullptr;
-  }
-  if (frame_info.AccumulatedFrames == 0) {
-    printf("The number of frames obtained is 0\n");
-    return nullptr;
+  while (true) {
+    err = _com_error(output_duplication->AcquireNextFrame(
+        kTimeout, &frame_info, dxgi_resource.GetAddressOf()));
+    if (SUCCEEDED(err.Error()) && frame_info.LastPresentTime.QuadPart) {
+      break;
+    }
+
+    wprintf(L"continue call AcquireNextFrame: %ls\n", err.ErrorMessage());
+    output_duplication->ReleaseFrame();
+    dxgi_resource.Reset();
+    ZeroMemory(&frame_info, sizeof(DXGI_OUTDUPL_FRAME_INFO));
   }
 
   ComPtr<ID3D11Texture2D> texture;
