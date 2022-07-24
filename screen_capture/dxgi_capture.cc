@@ -60,6 +60,8 @@ ScreenPicture* DXGICapture::Capture() {
     return nullptr;
   }
 
+#if 0
+
   DirectX::ScratchImage scratch_image;
   hr = DirectX::CaptureTexture(d3d11_device_.Get(),
                                d3d11_device_ctx_.Get(),
@@ -80,6 +82,45 @@ ScreenPicture* DXGICapture::Capture() {
   picture->size = image->height * image->rowPitch;
   picture->argb = new uint8_t[picture->size];
   memcpy(picture->argb, image->pixels, picture->size);
+
+#else
+
+  D3D11_TEXTURE2D_DESC desc;
+  texture->GetDesc(&desc);
+  desc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE | D3D11_CPU_ACCESS_READ;
+  desc.Usage = D3D11_USAGE_STAGING;
+  desc.BindFlags = 0;
+  desc.MiscFlags = 0; // D3D11_RESOURCE_MISC_GDI_COMPATIBLE ?
+
+  ComPtr<ID3D11Texture2D> cpu_texture;
+  hr = d3d11_device_->CreateTexture2D(&desc, nullptr, cpu_texture.GetAddressOf());
+  if (FAILED(hr)) {
+    printf("Failed to create cpu texture: 0x%x\n", hr);
+    return nullptr;
+  }
+  d3d11_device_ctx_->CopyResource(cpu_texture.Get(), texture.Get());
+
+  D3D11_MAPPED_SUBRESOURCE sr;
+  hr = d3d11_device_ctx_->Map(cpu_texture.Get(), 0, D3D11_MAP_READ, 0, &sr);
+  if (FAILED(hr)) {
+    printf("Failed to map gpu texture to cpu texture: 0x%x\n", hr);
+    return nullptr;
+  }
+
+  ScreenPicture* picture = new ScreenPicture;
+  picture->width = desc.Width;
+  picture->height = desc.Height;
+  picture->size = desc.Width * desc.Height * 4;
+  picture->argb = new uint8_t[picture->size];
+
+  const uint32_t row_len = desc.Width * 4;
+  for (uint32_t y = 0; y < desc.Height; ++y) {
+    memcpy(picture->argb + y * row_len, (uint8_t*)sr.pData + sr.RowPitch * y, row_len);
+  }
+
+  d3d11_device_ctx_->Unmap(cpu_texture.Get(), 0);
+
+#endif
 
   return picture;
 }
